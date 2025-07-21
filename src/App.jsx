@@ -33,13 +33,13 @@ export default function HomePage() {
     const renderPage = () => {
         switch (page) {
             case "3dprint":
-                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" />;
+                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" />;
             case "3dscan":
-                return <ServicePage title="3D Scanning" desc="Accurate scanning for both large and small items. Great for duplicates or custom work." goBack={() => setPage("home")} videoSrc="/videos/3dscan.mp4" />;
+                return <ServicePage title="3D Scanning" desc="Accurate scanning for both large and small items. Great for duplicates or custom work." extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair." goBack={() => setPage("home")} videoSrc="/videos/3dscan.mp4" />;
             case "uvprint":
                 return <ServicePage title="UV Color Printing (Coming October 2025)" desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting October 2025." goBack={() => setPage("home")} imageSrc="/images/uvprinter.png" />;
             case "laser":
-                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" />;
+                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" />;
             default:
                 return <SplashPage navigate={setPage} />;
         }
@@ -63,7 +63,7 @@ function SplashPage({ navigate }) {
     );
 }
 
-function ServicePage({ title, desc, goBack, videoSrc, imageSrc }) {
+function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc }) {
     const videoRef = useRef(null);
 
     useEffect(() => {
@@ -92,6 +92,7 @@ function ServicePage({ title, desc, goBack, videoSrc, imageSrc }) {
                     </video>
                 )}
             </div>
+            {extraDesc && <p style={{ color: "#9ca3af", marginTop: "1rem" }}>{extraDesc}</p>}
             <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
                 <button onClick={goBack} style={buttonStyle}>⬅ Back</button>
                 <button onClick={() => window.scrollTo(0, 0)} style={buttonStyle}>⬆ Top</button>
