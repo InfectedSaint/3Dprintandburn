@@ -52,7 +52,7 @@ function SplashPage({ navigate }) {
     return (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <img src="/logo_print_burn_better2.png" alt="3D Print & Burn Logo" style={{ margin: "0 auto", width: "300px" }} />
-            <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
+            <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services - Proudly serving Northwest Florida and Lower Alabama</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
                 <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
                 <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
