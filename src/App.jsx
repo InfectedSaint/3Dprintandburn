@@ -33,7 +33,7 @@ export default function HomePage() {
     const renderPage = () => {
         switch (page) {
             case "3dprint":
-                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" />;
+                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting resins." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" />;
             case "3dscan":
                 return <ServicePage title="3D Scanning" desc="Accurate scanning for both large and small items. Great for duplicates or custom work." extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair." goBack={() => setPage("home")} videoSrc="/videos/3dscan.mp4" />;
             case "uvprint":
