@@ -33,13 +33,13 @@ export default function HomePage() {
     const renderPage = () => {
         switch (page) {
             case "3dprint":
-                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting resins." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" />;
+                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" galleryFolder="/gallery/3dprint_gallery/" galleryImages={["dicetower.JPG", "dino.JPG", "drag2.JPG", "dragbig.JPG", "frog.JPG", "frog2.JPG", "frogs3.jpg", "heyh.JPG", "o1.jpg", "o2.jpg", "o3.JPG", "puzzel.jpg", "tap.JPG", "tap2.JPG", "tap3.JPG", "turt1.JPG", "turt2.JPG"]} />;
             case "3dscan":
                 return <ServicePage title="3D Scanning" desc="Accurate scanning for both large and small items. Great for duplicates or custom work." extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair." goBack={() => setPage("home")} videoSrc="/videos/3dscan.mp4" />;
             case "uvprint":
                 return <ServicePage title="UV Color Printing (Coming October 2025)" desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting October 2025." goBack={() => setPage("home")} imageSrc="/images/uvprinter.png" />;
             case "laser":
-                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" />;
+                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" galleryFolder="/gallery/laser_gallery/" galleryImages={["clay.JPG", "ecoin.JPG", "ecoin2.JPG", "lkc.JPG", "lorcup.JPG", "lorcup2.JPG", "marco.JPG", "pwco.JPG", "scotp.JPG", "sscup1.JPG", "sscup2.JPG"]} />;
             default:
                 return <SplashPage navigate={setPage} />;
         }
@@ -52,19 +52,20 @@ function SplashPage({ navigate }) {
     return (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
             <img src="/logo_print_burn_better2.png" alt="3D Print & Burn Logo" style={{ margin: "0 auto", width: "300px" }} />
-            <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services - Proudly serving Northwest Florida and Lower Alabama</p>
+            <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
-                <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
-                <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
-                <div onClick={() => navigate("uvprint")} style={cardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
-                <div onClick={() => navigate("laser")} style={cardStyle}>{icons.laser} <div>Laser Engraving</div></div>
+                <div onClick={() => navigate("3dprint") } style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
+                <div onClick={() => navigate("3dscan") } style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
+                <div onClick={() => navigate("uvprint") } style={cardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
+                <div onClick={() => navigate("laser") } style={cardStyle}>{icons.laser} <div>Laser Engraving</div></div>
             </div>
         </div>
     );
 }
 
-function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc }) {
+function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galleryFolder, galleryImages }) {
     const videoRef = useRef(null);
+    const [galleryIndex, setGalleryIndex] = useState(0);
 
     useEffect(() => {
         const video = videoRef.current;
@@ -93,6 +94,20 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc }) {
                 )}
             </div>
             {extraDesc && <p style={{ color: "#9ca3af", marginTop: "1rem" }}>{extraDesc}</p>}
+
+            {galleryFolder && galleryImages && (
+                <div style={{ marginTop: "2rem" }}>
+                    <h3 style={{ color: "#ffffff" }}>Gallery</h3>
+                    <div style={{ position: "relative", background: "black", padding: "1rem", borderRadius: "0.5rem" }}>
+                        <img src={`${galleryFolder}${galleryImages[galleryIndex]}`} alt="Gallery Image" style={{ width: "100%", maxWidth: "400px", maxHeight: "300px", objectFit: "contain", backgroundColor: "black", borderRadius: "0.5rem", marginTop: "0.5rem" }} />
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", gap: "1rem" }}>
+                            <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex - 1 + galleryImages.length) % galleryImages.length)}>⬅ Prev</button>
+                            <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex + 1) % galleryImages.length)}>Next ➡</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
                 <button onClick={goBack} style={buttonStyle}>⬅ Back</button>
                 <button onClick={() => window.scrollTo(0, 0)} style={buttonStyle}>⬆ Top</button>
