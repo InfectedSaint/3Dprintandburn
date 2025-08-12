@@ -118,17 +118,30 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 function SplashPage({ navigate }) {
     return (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            <img src="/logo_print_burn_better2.png" alt="3D Print & Burn Logo" style={{ margin: "0 auto", width: "300px" }} />
-            <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
-                <div onClick={() => navigate("3dprint") } style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
-                <div onClick={() => navigate("3dscan") } style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
-                <div onClick={() => navigate("uvprint") } style={cardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
-                <div onClick={() => navigate("laser") } style={cardStyle}>{icons.laser} <div>Laser Engraving</div></div>
+            {/* Keep the logo and buttons aligned to the same width */}
+            <div style={{ maxWidth: "min(90vw, 400px)", margin: "0 auto" }}>
+                <img
+                    src="/logo_print_burn_better2.png"
+                    alt="3D Print & Burn Logo"
+                    style={{ display: "block", width: "100%", height: "auto" }}
+                />
+                <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
+                    <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
+                    <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
+                    <div onClick={() => navigate("uvprint")} style={cardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
+                    <div onClick={() => navigate("laser")} style={cardStyle}>{icons.laser} <div>Laser Engraving</div></div>
+                </div>
             </div>
-            <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>Some services require an appointment.</p>
+
+            {/* Scheduling stays outside the narrow wrapper so it doesn't get squeezed or hidden */}
+            <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>
+                Some services require an appointment.
+            </p>
             <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
-                <div onClick={() => navigate("schedule") } style={{ ...cardStyle, maxWidth: "300px" }}>{icons.schedule} <div>Click here to see available appointments by day</div></div>
+                <div onClick={() => navigate("schedule")} style={{ ...cardStyle, maxWidth: "300px" }}>
+                    {icons.schedule} <div>Click here to see available appointments by day</div>
+                </div>
             </div>
         </div>
     );
