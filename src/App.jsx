@@ -163,7 +163,7 @@ function SchedulePage({ goBack }) {
         <div style={{ color: "white", textAlign: "center" }}>
             <h2>{months[currentMonth - 7]} 2025</h2>
             <p style={{ maxWidth: "600px", margin: "0 auto 1rem", color: "#9ca3af" }}>
-                Blue days are available. Red days are unavailable. To request an appointment, select a blue day and email <a href="mailto:sales@3dprintandburn.com" style={{ color: "#60a5fa" }}>sales@3dprintandburn.com</a> with your request.
+                Blue days are available. Red days are unavailable. To request an appointment, select a blue day and email <a href="mailto:John@3dprintandburn.com" style={{ color: "#60a5fa" }}>John@3dprintandburn.com</a> with your request.
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
                 <button onClick={() => changeMonth(-1)} disabled={currentMonth === 7} style={buttonStyle}>⬅ Prev</button>
