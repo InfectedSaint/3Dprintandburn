@@ -119,7 +119,7 @@ function SplashPage({ navigate }) {
     return (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
             {/* Keep the logo and buttons aligned to the same width */}
-            <div style={{ maxWidth: "min(90vw, 400px)", margin: "0 auto" }}>
+            <div style={{ maxWidth: "min(92vw, 400px)", margin: "0 auto" }}>
                 <img
                     src="/logo_print_burn_better2.png"
                     alt="3D Print & Burn Logo"
