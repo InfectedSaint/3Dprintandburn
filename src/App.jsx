@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import SEO from "./SEO";  // ✅ import SEO component
 
 // SVG Icons
 const icons = {
@@ -35,11 +36,11 @@ const icons = {
 
 const availability = {
     2025: {
-        7: Array.from({ length: 19 }, (_, i) => i + 1), // August (0-indexed)
-        8: Array.from({ length: 14 }, (_, i) => i + 17), // September
-        9: Array.from({ length: 15 }, (_, i) => i + 1), // October
-        10: Array.from({ length: 18 }, (_, i) => i + 13), // November
-        11: Array.from({ length: 9 }, (_, i) => i + 1), // December
+        7: Array.from({ length: 19 }, (_, i) => i + 1),
+        8: Array.from({ length: 14 }, (_, i) => i + 17),
+        9: Array.from({ length: 15 }, (_, i) => i + 1),
+        10: Array.from({ length: 18 }, (_, i) => i + 13),
+        11: Array.from({ length: 9 }, (_, i) => i + 1),
     }
 };
 
@@ -82,6 +83,13 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 
     return (
         <div style={{ maxWidth: "600px", margin: "3rem auto", textAlign: "center", color: "white" }}>
+            {/* ✅ SEO tags per service */}
+            <SEO
+                title={`${title} | 3D Print & Burn`}
+                description={desc}
+                image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_better2.png"}
+            />
+
             <h2 style={{ fontSize: "2rem", fontWeight: "600" }}>{title}</h2>
             <p style={{ marginBottom: "1rem" }}>{desc}</p>
             <div style={{ background: "#111827", padding: "1rem", borderRadius: "1rem" }}>
@@ -118,7 +126,13 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 function SplashPage({ navigate }) {
     return (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            {/* Keep the logo and buttons aligned to the same width */}
+            {/* ✅ SEO for homepage */}
+            <SEO
+                title="3D Print & Burn – Custom Fabrication Services"
+                description="Explore 3D printing, scanning, laser engraving, and UV color printing services in Northwest Florida & Lower Alabama."
+                image="/logo_print_burn_better2.png"
+            />
+
             <div style={{ maxWidth: "min(92vw, 400px)", margin: "0 auto" }}>
                 <img
                     src="/logo_print_burn_better2.png"
@@ -134,7 +148,6 @@ function SplashPage({ navigate }) {
                 </div>
             </div>
 
-            {/* Scheduling stays outside the narrow wrapper so it doesn't get squeezed or hidden */}
             <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>
                 Some services require an appointment.
             </p>
@@ -148,7 +161,7 @@ function SplashPage({ navigate }) {
 }
 
 function SchedulePage({ goBack }) {
-    const [currentMonth, setCurrentMonth] = useState(7); // August (0-indexed)
+    const [currentMonth, setCurrentMonth] = useState(7);
     const currentYear = 2025;
     const months = ["August", "September", "October", "November", "December"];
 
