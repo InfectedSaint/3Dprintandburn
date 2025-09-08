@@ -50,13 +50,13 @@ export default function HomePage() {
     const renderPage = () => {
         switch (page) {
             case "3dprint":
-                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" galleryFolder="/gallery/3dprint_gallery/" galleryImages={["dicetower.JPG", "dino.JPG", "drag2.JPG", "dragbig.JPG", "frog.JPG", "frog2.JPG", "frogs3.jpg", "heyh.JPG", "o1.jpg", "o2.jpg", "o3.JPG", "puzzel.jpg", "tap.JPG", "tap2.JPG", "tap3.JPG", "turt1.JPG", "turt2.JPG"]} />;
+                return <ServicePage title="3D Print & Design" desc="High-quality FDM and resin printing, custom modeling, and prototyping." extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models." goBack={() => setPage("home")} videoSrc="/videos/3dprint.mp4" galleryFolder="/gallery/3dprint_gallery/" galleryImages={["dicetower.JPG", "fal_cor.png","dino.JPG", "drag2.JPG", "dragbig.JPG", "frog.JPG", "blue_dev.png", "c_op.png", "frog2.JPG", "frogs3.jpg", "heyh.JPG", "o1.jpg", "o2.jpg", "o3.JPG", "puzzel.jpg", "tap.JPG", "tap2.JPG", "tap3.JPG", "turt1.JPG", "turt2.JPG"]} />;
             case "3dscan":
                 return <ServicePage title="3D Scanning" desc="Accurate scanning for both large and small items. Great for duplicates or custom work." extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair." goBack={() => setPage("home")} videoSrc="/videos/3dscan.mp4" />;
             case "uvprint":
                 return <ServicePage title="UV Color Printing (Coming October 2025)" desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting October 2025." goBack={() => setPage("home")} imageSrc="/images/uvprinter.png" />;
             case "laser":
-                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" galleryFolder="/gallery/laser_gallery/" galleryImages={["clay.JPG", "ecoin.JPG", "ecoin2.JPG", "lkc.JPG", "lorcup.JPG", "lorcup2.JPG", "marco.JPG", "pwco.JPG", "scotp.JPG", "sscup1.JPG", "sscup2.JPG"]} />;
+                return <ServicePage title="Laser Engraving & Etching" desc="Detailed laser work on wood, metal, and acrylic with high precision." extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more." goBack={() => setPage("home")} videoSrc="/videos/laser.mp4" galleryFolder="/gallery/laser_gallery/" galleryImages={["clay.JPG", "ecoin.JPG", "ecoin2.JPG", "lkc.JPG", "lorcup.JPG", "lorcup2.JPG", "cutt_b.png", "marco.JPG", "coin_south.jpg", "pwco.JPG", "scotp.JPG", "sscup1.JPG", "sscup2.JPG"]} />;
             case "schedule":
                 return <SchedulePage goBack={() => setPage("home")} />;
             default:
@@ -64,7 +64,40 @@ export default function HomePage() {
         }
     };
 
-    return <div style={{ padding: "1rem", minHeight: "100vh", backgroundColor: "#000000" }}>{renderPage()}</div>;
+    return (
+  <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
+    {/* Page content with bottom padding so it doesn't get hidden under footer */}
+    <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>
+      {renderPage()}
+    </div>
+
+    {/* Sticky footer */}
+    <footer
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        textAlign: "center",
+        padding: "0.5rem",
+        fontSize: "0.9rem",
+        backgroundColor: "#000000",
+        color: "#FFA94D",
+        borderTop: "1px solid #333"
+      }}
+    >
+      <a
+        href="https://www.facebook.com/profile.php?id=61580311744433"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: "#FFA94D", textDecoration: "none" }}
+      >
+        Connect with us on Facebook
+      </a>
+    </footer>
+  </div>
+);
+
 }
 
 function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galleryFolder, galleryImages }) {
