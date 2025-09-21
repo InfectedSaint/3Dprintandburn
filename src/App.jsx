@@ -68,6 +68,7 @@ export default function HomePage() {
               "blue_dev.png",
               "c_op.png",
               "frog2.JPG",
+              "Pumpkins_guy.jpg",
               "frogs3.jpg",
               "heyh.JPG",
               "o1.jpg",
@@ -90,6 +91,8 @@ export default function HomePage() {
             extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair."
             goBack={() => setPage("home")}
             videoSrc="/videos/3dscan.mp4"
+            galleryFolder="/gallery/3dscan_gallery/"
+            galleryImages={["Scan_Pendent.jpg"]}
           />
         );
       case "uvprint":
