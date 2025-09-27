@@ -21,7 +21,7 @@ function Write-Ok($m){Write-Host "[OK]    $m" -f Green}
 function Write-Step($m){Write-Host "[STEP]  $m" -f Magenta}
 function Write-ErrorMsg($m){Write-Host "[ERROR] $m" -f Red}
 
-# ---- Profiles (edit as needed) ----
+# ---- Profiles ----
 $Profiles = @{
   john = @{ name = "infectedsaint"; email = "johncomalander@gmail.com" }
   gary = @{ name = "Gnoski1236";    email = "gnoski1236@yahoo.com" }
@@ -48,38 +48,16 @@ $currentName  = Get-GitConfig "user.name"
 $currentEmail = Get-GitConfig "user.email"
 Write-Info ("Current cfg: user.name=`"$currentName`", user.email=`"$currentEmail`"")
 
-# Ensure correct author (repo-local)
+# Ensure correct author
 if ($desiredName -and $desiredEmail) {
   if ($currentName -ne $desiredName -or $currentEmail -ne $desiredEmail) {
     Write-Step "Setting repo author to: `"$desiredName`" <$desiredEmail>"
     Set-GitConfigLocal "user.name"  $desiredName
     Set-GitConfigLocal "user.email" $desiredEmail
-    $currentName  = Get-GitConfig "user.name"
-    $currentEmail = Get-GitConfig "user.email"
-    Write-Ok "Now using: user.name=`"$currentName`", user.email=`"$currentEmail`""
+    Write-Ok "Now using: user.name=`"$desiredName`", user.email=`"$desiredEmail`""
   } else {
     Write-Ok "Author already correct."
   }
-} else {
-  Write-Warn "No profile/name/email provided. Continuing with current author."
-}
-
-# Amend only path
-if ($AmendAndFixAuthor) {
-  Write-Step "Amending last commit and resetting author…"
-  git commit --amend --reset-author --no-edit
-  Write-Step "Pushing (force-with-lease)…"
-  git push $Remote $Branch --force-with-lease
-  Write-Ok "Done."
-  exit 0
-}
-
-# Push-only path
-if ($PushOnly) {
-  Write-Step "Pushing '$Branch' to '$Remote'…"
-  git push $Remote $Branch
-  Write-Ok "Push complete."
-  exit 0
 }
 
 # ---- NEW: Build & Preview ----
@@ -87,17 +65,20 @@ Write-Step "Building site…"
 npm run build
 
 Write-Step "Starting preview server…"
-Write-Host ">>> Press Ctrl+C to stop preview once you've checked the site."
-Start-Process powershell -ArgumentList "npm run preview" -NoNewWindow
+Write-Host ">>> Preview running at http://localhost:4173"
+Write-Host ">>> Press Ctrl+C to stop preview when finished checking."
 
-Write-Warn "Preview is running. Open http://localhost:4173 to test."
+# Run preview in the current process so user must close it manually
+npm run preview
+
+# After preview closes, ask before push
 $confirm = Read-Host "Do you want to continue with Git commit & push? (y/n)"
 if ($confirm -ne "y") {
   Write-Warn "Aborting push per user choice."
   exit 0
 }
 
-# Normal flow (commit + push)
+# Commit + push
 Write-Step "Checking changes…"
 $porcelain = (git status --porcelain)
 if (-not $porcelain) {
