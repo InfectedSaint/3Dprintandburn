@@ -60,6 +60,10 @@ export default function HomePage() {
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
               "dicetower.JPG",
+              "grim_group.jpg",
+              "grim.png",
+              "color_roo.png",
+              "skel_rose.png",
               "fal_cor.png",
               "dino.JPG",
               "drag2.JPG",

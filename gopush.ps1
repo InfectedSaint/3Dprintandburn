@@ -82,7 +82,22 @@ if ($PushOnly) {
   exit 0
 }
 
-# Normal flow
+# ---- NEW: Build & Preview ----
+Write-Step "Building site…"
+npm run build
+
+Write-Step "Starting preview server…"
+Write-Host ">>> Press Ctrl+C to stop preview once you've checked the site."
+Start-Process powershell -ArgumentList "npm run preview" -NoNewWindow
+
+Write-Warn "Preview is running. Open http://localhost:4173 to test."
+$confirm = Read-Host "Do you want to continue with Git commit & push? (y/n)"
+if ($confirm -ne "y") {
+  Write-Warn "Aborting push per user choice."
+  exit 0
+}
+
+# Normal flow (commit + push)
 Write-Step "Checking changes…"
 $porcelain = (git status --porcelain)
 if (-not $porcelain) {
