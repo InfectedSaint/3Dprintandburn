@@ -27,7 +27,28 @@ $Profiles = @{
   gary = @{ name = "Gnoski1236";    email = "gnoski1236@yahoo.com" }
 }
 
-# Resolve identity
+# ---- Step 1: Build & Preview ----
+Write-Step "Building site…"
+npm run build
+
+Write-Step "Starting preview server…"
+Write-Host ">>> Preview running at http://localhost:4173"
+Write-Host ">>> Press Ctrl+C to stop preview when finished checking."
+
+# Auto-open browser
+Start-Process "http://localhost:4173"
+
+# Run preview in current process (blocks until you stop with Ctrl+C)
+npm run preview
+
+# Ask before continuing
+$confirm = Read-Host "Do you want to continue with Git commit & push? (y/n)"
+if ($confirm -ne "y") {
+  Write-Warn "Aborting push per user choice."
+  exit 0
+}
+
+# ---- Step 2: Setup Git author ----
 $desiredName  = $null; $desiredEmail = $null
 if ($Profile) {
   if (-not $Profiles.ContainsKey($Profile)) {
@@ -39,46 +60,21 @@ if ($Profile) {
 if ($User)  { $desiredName  = $User }
 if ($Email) { $desiredEmail = $Email }
 
-# Show context
-Write-Info ("Repo:        " + (git rev-parse --show-toplevel))
-Write-Info ("Remote URL:  " + (git remote get-url $Remote))
 if (-not $Branch) { $Branch = Get-CurrentBranch }
-Write-Info ("Branch:      " + $Branch)
+
 $currentName  = Get-GitConfig "user.name"
 $currentEmail = Get-GitConfig "user.email"
-Write-Info ("Current cfg: user.name=`"$currentName`", user.email=`"$currentEmail`"")
 
-# Ensure correct author
 if ($desiredName -and $desiredEmail) {
   if ($currentName -ne $desiredName -or $currentEmail -ne $desiredEmail) {
     Write-Step "Setting repo author to: `"$desiredName`" <$desiredEmail>"
     Set-GitConfigLocal "user.name"  $desiredName
     Set-GitConfigLocal "user.email" $desiredEmail
-    Write-Ok "Now using: user.name=`"$desiredName`", user.email=`"$desiredEmail`""
-  } else {
-    Write-Ok "Author already correct."
+    Write-Ok "Author updated."
   }
 }
 
-# ---- NEW: Build & Preview ----
-Write-Step "Building site…"
-npm run build
-
-Write-Step "Starting preview server…"
-Write-Host ">>> Preview running at http://localhost:4173"
-Write-Host ">>> Press Ctrl+C to stop preview when finished checking."
-
-# Run preview in the current process so user must close it manually
-npm run preview
-
-# After preview closes, ask before push
-$confirm = Read-Host "Do you want to continue with Git commit & push? (y/n)"
-if ($confirm -ne "y") {
-  Write-Warn "Aborting push per user choice."
-  exit 0
-}
-
-# Commit + push
+# ---- Step 3: Commit & Push ----
 Write-Step "Checking changes…"
 $porcelain = (git status --porcelain)
 if (-not $porcelain) {
