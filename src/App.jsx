@@ -128,6 +128,11 @@ export default function HomePage() {
               "marco.JPG",
               "coin_south.jpg",
               "pwco.JPG",
+              "harper1.jpg",
+              "harper2.jpg",
+              "Noah1.jpg",
+              "Noah2.jpg",
+              "pops.jpg",
               "scotp.JPG",
               "sscup1.JPG",
               "sscup2.JPG"
