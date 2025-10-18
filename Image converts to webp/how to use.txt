@@ -1,0 +1,2 @@
+run the convert to webp batch file.
+select all the image names from the app.jsx code file and run the rename powershell on them
