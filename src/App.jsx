@@ -102,8 +102,8 @@ export default function HomePage() {
       case "uvprint":
         return (
           <ServicePage
-            title="UV Color Printing (Coming October 2025)"
-            desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting October 2025."
+            title="UV Color Printing (February 2026)"
+            desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting February - March 2026."
             goBack={() => setPage("home")}
             imageSrc="/images/uvprinter.png"
           />
@@ -118,6 +118,14 @@ export default function HomePage() {
             videoSrc="/videos/laser.mp4"
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
+              "sheri1.jpg",
+              "sheri2.png",
+              "josh1.jpg",
+              "josh2.jpg",
+              "janice1.jpg",
+              "janice2.jpg",
+              "den1.jpg","david1.jpg",
+              "david2.jpg",
               "clay.JPG",
               "ecoin.JPG",
               "ecoin2.JPG",
