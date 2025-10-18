@@ -225,89 +225,22 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
         )}
       </div>
       {extraDesc && <p style={{ marginTop: "1rem", color: "#9ca3af" }}>{extraDesc}</p>}
-
-      {/* ✅ Gallery with thumbnail strip */}
       {galleryFolder && galleryImages && (
         <div style={{ marginTop: "2rem" }}>
           <h3>Gallery</h3>
-
-          {/* Main image */}
           <div style={{ position: "relative", padding: "1rem" }}>
             <img
               src={`${galleryFolder}${galleryImages[galleryIndex]}`}
               alt="Gallery Image"
-              style={{ width: "100%", maxHeight: "300px", objectFit: "contain", borderRadius: "0.5rem" }}
+              style={{ width: "100%", maxHeight: "300px", objectFit: "contain" }}
             />
             <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", gap: "1rem" }}>
-              <button
-                style={buttonStyle}
-                onClick={() => setGalleryIndex((galleryIndex - 1 + galleryImages.length) % galleryImages.length)}
-                aria-label="Previous image"
-              >
-                ⬅ Prev
-              </button>
-              <button
-                style={buttonStyle}
-                onClick={() => setGalleryIndex((galleryIndex + 1) % galleryImages.length)}
-                aria-label="Next image"
-              >
-                Next ➡
-              </button>
+              <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex - 1 + galleryImages.length) % galleryImages.length)}>⬅ Prev</button>
+              <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex + 1) % galleryImages.length)}>Next ➡</button>
             </div>
-          </div>
-
-          {/* Thumbnail strip */}
-          <div
-            style={{
-              marginTop: "0.75rem",
-              padding: "0.5rem",
-              background: "#0b1220",
-              borderRadius: "0.5rem",
-              overflowX: "auto",
-              whiteSpace: "nowrap"
-            }}
-            aria-label="Thumbnail gallery"
-          >
-            {galleryImages.map((img, i) => {
-              const isActive = i === galleryIndex;
-              return (
-                <button
-                  key={img + i}
-                  onClick={() => setGalleryIndex(i)}
-                  aria-label={`Show image ${i + 1}`}
-                  style={{
-                    display: "inline-block",
-                    border: "none",
-                    background: "transparent",
-                    padding: 0,
-                    marginRight: "0.5rem",
-                    cursor: "pointer",
-                    outline: "none"
-                  }}
-                >
-                  <img
-                    src={`${galleryFolder}${img}`}
-                    alt={`Thumbnail ${i + 1}`}
-                    loading="lazy"
-                    style={{
-                      width: 72,
-                      height: 72,
-                      objectFit: "cover",
-                      borderRadius: "0.4rem",
-                      border: isActive ? "2px solid #60a5fa" : "2px solid transparent",
-                      boxShadow: isActive ? "0 0 0 2px rgba(96,165,250,0.3)" : "none",
-                      opacity: isActive ? 1 : 0.85
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseOut={(e) => (e.currentTarget.style.opacity = isActive ? "1" : "0.85")}
-                  />
-                </button>
-              );
-            })}
           </div>
         </div>
       )}
-
       <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
         <button onClick={goBack} style={buttonStyle}>⬅ Back</button>
         <button onClick={() => window.scrollTo(0, 0)} style={buttonStyle}>⬆ Top</button>
