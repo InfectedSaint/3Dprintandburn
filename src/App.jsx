@@ -59,31 +59,31 @@ export default function HomePage() {
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
-              "dicetower.JPG",
-              "grim_group.jpg",
-              "grim.png",
-              "color_roo.png",
-              "skel_rose.png",
-              "fal_cor.png",
-              "dino.JPG",
-              "drag2.JPG",
-              "dragbig.JPG",
-              "frog.JPG",
-              "blue_dev.png",
-              "c_op.png",
-              "frog2.JPG",
-              "Pumpkins_guy.jpg",
-              "frogs3.jpg",
-              "heyh.JPG",
-              "o1.jpg",
-              "o2.jpg",
-              "o3.JPG",
-              "puzzel.jpg",
-              "tap.JPG",
-              "tap2.JPG",
-              "tap3.JPG",
-              "turt1.JPG",
-              "turt2.JPG"
+              "dicetower.webp",
+  "grim_group.webp",
+  "grim.webp",
+  "color_roo.webp",
+  "skel_rose.webp",
+  "fal_cor.webp",
+  "dino.webp",
+  "drag2.webp",
+  "dragbig.webp",
+  "frog.webp",
+  "blue_dev.webp",
+  "c_op.webp",
+  "frog2.webp",
+  "Pumpkins_guy.webp",
+  "frogs3.webp",
+  "heyh.webp",
+  "o1.webp",
+  "o2.webp",
+  "o3.webp",
+  "puzzel.webp",
+  "tap.webp",
+  "tap2.webp",
+  "tap3.webp",
+  "turt1.webp",
+  "turt2.webp"
             ]}
           />
         );
@@ -96,7 +96,7 @@ export default function HomePage() {
             goBack={() => setPage("home")}
             videoSrc="/videos/3dscan.mp4"
             galleryFolder="/gallery/3dscan_gallery/"
-            galleryImages={["Scan_Pendent.jpg"]}
+            galleryImages={["Scan_Pendent.webp"]}
           />
         );
       case "uvprint":
@@ -118,32 +118,33 @@ export default function HomePage() {
             videoSrc="/videos/laser.mp4"
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
-              "sheri1.jpg",
-              "sheri2.png",
-              "josh1.jpg",
-              "josh2.jpg",
-              "janice1.jpg",
-              "janice2.jpg",
-              "den1.jpg","david1.jpg",
-              "david2.jpg",
-              "clay.JPG",
-              "ecoin.JPG",
-              "ecoin2.JPG",
-              "lkc.JPG",
-              "lorcup.JPG",
-              "lorcup2.JPG",
-              "cutt_b.png",
-              "marco.JPG",
-              "coin_south.jpg",
-              "pwco.JPG",
-              "harper1.jpg",
-              "harper2.jpg",
-              "Noah1.jpg",
-              "Noah2.jpg",
-              "pops.jpg",
-              "scotp.JPG",
-              "sscup1.JPG",
-              "sscup2.JPG"
+              "sheri1.webp",
+  "sheri2.webp",
+  "josh1.webp",
+  "josh2.webp",
+  "janice1.webp",
+  "janice2.webp",
+  "den1.webp",
+  "david1.webp",
+  "david2.webp",
+  "clay.webp",
+  "ecoin.webp",
+  "ecoin2.webp",
+  "lkc.webp",
+  "lorcup.webp",
+  "lorcup2.webp",
+  "cutt_b.webp",
+  "marco.webp",
+  "coin_south.webp",
+  "pwco.webp",
+  "harper1.webp",
+  "harper2.webp",
+  "Noah1.webp",
+  "Noah2.webp",
+  "pops.webp",
+  "scotp.webp",
+  "sscup1.webp",
+  "sscup2.webp"
             ]}
           />
         );
