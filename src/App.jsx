@@ -59,6 +59,9 @@ export default function HomePage() {
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
+              
+              "Rad_ant.webp",
+              "Rad_Controler.webp",
               "dicetower.webp",
   "grim_group.webp",
   "grim.webp",
@@ -120,6 +123,10 @@ export default function HomePage() {
             galleryImages={[
               "sheri1.webp",
   "sheri2.webp",
+  "Barb_1.webp",
+  "Barb_2.webp",
+  "IDNC.webp",
+  "Traci.webp",
   "josh1.webp",
   "josh2.webp",
   "janice1.webp",
