@@ -1,5 +1,63 @@
 import { useState, useRef, useEffect } from "react";
-import SEO from "./SEO";  // ✅ import SEO component
+import SEO from "./SEO"; // ✅ import SEO component
+
+// 🔥 Logo glow/burn CSS (best with transparent PNG)
+const logoStyles = `
+  .logo-wrapper {
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .logo-image {
+    display: block;
+    width: 100%;
+    height: auto;
+
+    /* The periodic pulse (rare) */
+    animation: burnPulse 26s ease-in-out infinite;
+    will-change: filter;
+  }
+
+  /* 🔥 Instant ignite on hover (quick test to confirm it works) */
+  .logo-wrapper:hover .logo-image {
+    filter:
+      drop-shadow(0 0 8px rgba(255, 140, 0, 0.65))
+      drop-shadow(0 0 18px rgba(255, 70, 0, 0.95));
+  }
+
+  /* ✅ Only glows briefly so it doesn't feel gimmicky */
+  @keyframes burnPulse {
+    0%, 90% { filter: none; }
+
+    93% {
+      filter:
+        drop-shadow(0 0 4px rgba(255, 140, 0, 0.35))
+        drop-shadow(0 0 8px rgba(255, 90, 0, 0.55));
+    }
+
+    96% {
+      filter:
+        drop-shadow(0 0 10px rgba(255, 120, 0, 0.85))
+        drop-shadow(0 0 18px rgba(255, 60, 0, 0.9));
+    }
+
+    98% {
+      filter:
+        drop-shadow(0 0 6px rgba(255, 140, 0, 0.45));
+    }
+
+    100% { filter: none; }
+  }
+
+  /* Respect reduced motion settings */
+  @media (prefers-reduced-motion: reduce) {
+    .logo-image {
+      animation: none !important;
+      filter: none !important;
+    }
+  }
+`;
 
 // SVG Icons
 const icons = {
@@ -35,12 +93,42 @@ const icons = {
 };
 
 const availability = {
-  2025: {
-    7: Array.from({ length: 19 }, (_, i) => i + 1),
-    8: Array.from({ length: 14 }, (_, i) => i + 17),
-    9: Array.from({ length: 15 }, (_, i) => i + 1),
-    10: Array.from({ length: 18 }, (_, i) => i + 13),
-    11: Array.from({ length: 9 }, (_, i) => i + 1),
+  2026: {
+    // January: 8–31
+    0: Array.from({ length: 31 - 8 + 1 }, (_, i) => i + 8),
+
+    // February: 1–3
+    1: [1, 2, 3],
+
+    // March: 5–31
+    2: Array.from({ length: 31 - 5 + 1 }, (_, i) => i + 5),
+
+    // April: 30 only
+    3: [30],
+
+    // May: 1–25
+    4: Array.from({ length: 25 }, (_, i) => i + 1),
+
+    // June: 25–30
+    5: Array.from({ length: 30 - 25 + 1 }, (_, i) => i + 25),
+
+    // July: 1–20
+    6: Array.from({ length: 20 }, (_, i) => i + 1),
+
+    // August: 20–31
+    7: Array.from({ length: 31 - 20 + 1 }, (_, i) => i + 20),
+
+    // September: 1–15
+    8: Array.from({ length: 15 }, (_, i) => i + 1),
+
+    // October: 15–31
+    9: Array.from({ length: 31 - 15 + 1 }, (_, i) => i + 15),
+
+    // November: 1–9
+    10: Array.from({ length: 9 }, (_, i) => i + 1),
+
+    // December: 10–31
+    11: Array.from({ length: 31 - 10 + 1 }, (_, i) => i + 10)
   }
 };
 
@@ -59,31 +147,33 @@ export default function HomePage() {
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
-              "dicetower.JPG",
-              "grim_group.jpg",
-              "grim.png",
-              "color_roo.png",
-              "skel_rose.png",
-              "fal_cor.png",
-              "dino.JPG",
-              "drag2.JPG",
-              "dragbig.JPG",
-              "frog.JPG",
-              "blue_dev.png",
-              "c_op.png",
-              "frog2.JPG",
-              "Pumpkins_guy.jpg",
-              "frogs3.jpg",
-              "heyh.JPG",
-              "o1.jpg",
-              "o2.jpg",
-              "o3.JPG",
-              "puzzel.jpg",
-              "tap.JPG",
-              "tap2.JPG",
-              "tap3.JPG",
-              "turt1.JPG",
-              "turt2.JPG"
+              "Rad_ant.webp",
+              "Rad_Controler.webp",
+              "dicetower.webp",
+              "grim_group.webp",
+              "grim.webp",
+              "color_roo.webp",
+              "skel_rose.webp",
+              "fal_cor.webp",
+              "dino.webp",
+              "drag2.webp",
+              "dragbig.webp",
+              "frog.webp",
+              "blue_dev.webp",
+              "c_op.webp",
+              "frog2.webp",
+              "Pumpkins_guy.webp",
+              "frogs3.webp",
+              "heyh.webp",
+              "o1.webp",
+              "o2.webp",
+              "o3.webp",
+              "puzzel.webp",
+              "tap.webp",
+              "tap2.webp",
+              "tap3.webp",
+              "turt1.webp",
+              "turt2.webp"
             ]}
           />
         );
@@ -96,7 +186,7 @@ export default function HomePage() {
             goBack={() => setPage("home")}
             videoSrc="/videos/3dscan.mp4"
             galleryFolder="/gallery/3dscan_gallery/"
-            galleryImages={["Scan_Pendent.jpg"]}
+            galleryImages={["Scan_Pendent.webp"]}
           />
         );
       case "uvprint":
@@ -118,32 +208,37 @@ export default function HomePage() {
             videoSrc="/videos/laser.mp4"
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
-              "sheri1.jpg",
-              "sheri2.png",
-              "josh1.jpg",
-              "josh2.jpg",
-              "janice1.jpg",
-              "janice2.jpg",
-              "den1.jpg","david1.jpg",
-              "david2.jpg",
-              "clay.JPG",
-              "ecoin.JPG",
-              "ecoin2.JPG",
-              "lkc.JPG",
-              "lorcup.JPG",
-              "lorcup2.JPG",
-              "cutt_b.png",
-              "marco.JPG",
-              "coin_south.jpg",
-              "pwco.JPG",
-              "harper1.jpg",
-              "harper2.jpg",
-              "Noah1.jpg",
-              "Noah2.jpg",
-              "pops.jpg",
-              "scotp.JPG",
-              "sscup1.JPG",
-              "sscup2.JPG"
+              "sheri1.webp",
+              "sheri2.webp",
+              "Barb_1.webp",
+              "Barb_2.webp",
+              "IDNC.webp",
+              "Traci.webp",
+              "josh1.webp",
+              "josh2.webp",
+              "janice1.webp",
+              "janice2.webp",
+              "den1.webp",
+              "david1.webp",
+              "david2.webp",
+              "clay.webp",
+              "ecoin.webp",
+              "ecoin2.webp",
+              "lkc.webp",
+              "lorcup.webp",
+              "lorcup2.webp",
+              "cutt_b.webp",
+              "marco.webp",
+              "coin_south.webp",
+              "pwco.webp",
+              "harper1.webp",
+              "harper2.webp",
+              "Noah1.webp",
+              "Noah2.webp",
+              "pops.webp",
+              "scotp.webp",
+              "sscup1.webp",
+              "sscup2.webp"
             ]}
           />
         );
@@ -156,10 +251,11 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
+      {/* ✅ Inject logo CSS once */}
+      <style>{logoStyles}</style>
+
       {/* Page content with bottom padding so it doesn't get hidden under footer */}
-      <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>
-        {renderPage()}
-      </div>
+      <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>{renderPage()}</div>
 
       {/* Sticky footer */}
       <footer
@@ -205,15 +301,15 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 
   return (
     <div style={{ maxWidth: "600px", margin: "3rem auto", textAlign: "center", color: "white" }}>
-      {/* ✅ SEO tags per service */}
       <SEO
         title={`${title} | 3D Print & Burn`}
         description={desc}
-        image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_better2.png"}
+        image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_transparent.png"}
       />
 
       <h2 style={{ fontSize: "2rem", fontWeight: "600" }}>{title}</h2>
       <p style={{ marginBottom: "1rem" }}>{desc}</p>
+
       <div style={{ background: "#111827", padding: "1rem", borderRadius: "1rem" }}>
         {imageSrc ? (
           <img src={imageSrc} alt={title} style={{ width: "100%", borderRadius: "0.75rem" }} />
@@ -224,23 +320,88 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
           </video>
         )}
       </div>
+
       {extraDesc && <p style={{ marginTop: "1rem", color: "#9ca3af" }}>{extraDesc}</p>}
+
       {galleryFolder && galleryImages && (
         <div style={{ marginTop: "2rem" }}>
           <h3>Gallery</h3>
+
           <div style={{ position: "relative", padding: "1rem" }}>
             <img
               src={`${galleryFolder}${galleryImages[galleryIndex]}`}
               alt="Gallery Image"
-              style={{ width: "100%", maxHeight: "300px", objectFit: "contain" }}
+              style={{ width: "100%", maxHeight: "300px", objectFit: "contain", borderRadius: "0.5rem" }}
             />
             <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", gap: "1rem" }}>
-              <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex - 1 + galleryImages.length) % galleryImages.length)}>⬅ Prev</button>
-              <button style={buttonStyle} onClick={() => setGalleryIndex((galleryIndex + 1) % galleryImages.length)}>Next ➡</button>
+              <button
+                style={buttonStyle}
+                onClick={() => setGalleryIndex((galleryIndex - 1 + galleryImages.length) % galleryImages.length)}
+                aria-label="Previous image"
+              >
+                ⬅ Prev
+              </button>
+              <button
+                style={buttonStyle}
+                onClick={() => setGalleryIndex((galleryIndex + 1) % galleryImages.length)}
+                aria-label="Next image"
+              >
+                Next ➡
+              </button>
             </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: "0.75rem",
+              padding: "0.5rem",
+              background: "#0b1220",
+              borderRadius: "0.5rem",
+              overflowX: "auto",
+              whiteSpace: "nowrap"
+            }}
+            aria-label="Thumbnail gallery"
+          >
+            {galleryImages.map((img, i) => {
+              const isActive = i === galleryIndex;
+              return (
+                <button
+                  key={img + i}
+                  onClick={() => setGalleryIndex(i)}
+                  aria-label={`Show image ${i + 1}`}
+                  style={{
+                    display: "inline-block",
+                    border: "none",
+                    background: "transparent",
+                    padding: 0,
+                    marginRight: "0.5rem",
+                    cursor: "pointer",
+                    outline: "none"
+                  }}
+                >
+                  <img
+                    src={`${galleryFolder}${img}`}
+                    alt={`Thumbnail ${i + 1}`}
+                    loading="lazy"
+                    style={{
+                      width: 72,
+                      height: 72,
+                      objectFit: "cover",
+                      borderRadius: "0.4rem",
+                      border: isActive ? "2px solid #60a5fa" : "2px solid transparent",
+                      boxShadow: isActive ? "0 0 0 2px rgba(96,165,250,0.3)" : "none",
+                      opacity: isActive ? 1 : 0.85
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseOut={(e) => (e.currentTarget.style.opacity = isActive ? "1" : "0.85")}
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
+
       <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
         <button onClick={goBack} style={buttonStyle}>⬅ Back</button>
         <button onClick={() => window.scrollTo(0, 0)} style={buttonStyle}>⬆ Top</button>
@@ -252,20 +413,24 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 function SplashPage({ navigate }) {
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      {/* ✅ SEO for homepage */}
       <SEO
         title="3D Print & Burn – Custom Fabrication Services"
         description="Explore 3D printing, scanning, laser engraving, and UV color printing services in Northwest Florida & Lower Alabama."
-        image="/logo_print_burn_better2.png"
+        image="/logo_print_burn_transparent.png"
       />
 
       <div style={{ maxWidth: "min(92vw, 400px)", margin: "0 auto" }}>
-        <img
-          src="/logo_print_burn_better2.png"
-          alt="3D Print & Burn Logo"
-          style={{ display: "block", width: "100%", height: "auto" }}
-        />
+        {/* ✅ Transparent logo + burn pulse */}
+        <div className="logo-wrapper">
+          <img
+            src="/logo_print_burn_transparent.png"
+            alt="3D Print & Burn Logo"
+            className="logo-image"
+          />
+        </div>
+
         <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
           <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
           <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
@@ -277,6 +442,7 @@ function SplashPage({ navigate }) {
       <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>
         Some services require an appointment.
       </p>
+
       <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
         <div onClick={() => navigate("schedule")} style={{ ...cardStyle, maxWidth: "300px" }}>
           {icons.schedule} <div>Click here to see available appointments by day</div>
@@ -287,24 +453,28 @@ function SplashPage({ navigate }) {
 }
 
 function SchedulePage({ goBack }) {
-  const [currentMonth, setCurrentMonth] = useState(7);
-  const currentYear = 2025;
-  const months = ["August", "September", "October", "November", "December"];
+  const currentYear = 2026;
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const [currentMonth, setCurrentMonth] = useState(0);
 
   const changeMonth = (offset) => {
-    setCurrentMonth((prev) => Math.min(11, Math.max(7, prev + offset)));
+    setCurrentMonth((prev) => Math.min(11, Math.max(0, prev + offset)));
   };
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const availableDays = availability[currentYear][currentMonth] || [];
+  const availableDays = availability?.[currentYear]?.[currentMonth] || [];
 
-  // 🔗 Build a mailto link with prefilled subject/body for available days
   const mailtoForDay = (dayNum) => {
-    const dateLabel = `${months[currentMonth - 7]} ${dayNum}, ${currentYear}`;
+    const dateLabel = `${monthNames[currentMonth]} ${dayNum}, ${currentYear}`;
     const to = "John@3dprintandburn.com";
     const subject = encodeURIComponent(`Appointment request for ${dateLabel}`);
     const body = encodeURIComponent(
-      `Hello 3D Print & Burn,
+`Hello 3D Print & Burn,
 
 I'd like to request an appointment on ${dateLabel}.
 
@@ -326,7 +496,8 @@ Thanks!`
 
   return (
     <div style={{ color: "white", textAlign: "center" }}>
-      <h2>{months[currentMonth - 7]} 2025</h2>
+      <h2>{monthNames[currentMonth]} {currentYear}</h2>
+
       <p style={{ maxWidth: "600px", margin: "0 auto 1rem", color: "#9ca3af" }}>
         Blue days are available. Red days are unavailable. To request an appointment, click a blue day to open your email client (or email{" "}
         <a href="mailto:John@3dprintandburn.com" style={{ color: "#60a5fa" }}>
@@ -334,12 +505,12 @@ Thanks!`
         </a>
         ).
       </p>
+
       <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
-        <button onClick={() => changeMonth(-1)} disabled={currentMonth === 7} style={buttonStyle}>⬅ Prev</button>
+        <button onClick={() => changeMonth(-1)} disabled={currentMonth === 0} style={buttonStyle}>⬅ Prev</button>
         <button onClick={() => changeMonth(1)} disabled={currentMonth === 11} style={buttonStyle}>Next ➡</button>
       </div>
 
-      {/* 📅 Calendar grid with links on available (blue) days only */}
       <div
         style={{
           display: "grid",
@@ -354,7 +525,6 @@ Thanks!`
           const isAvailable = availableDays.includes(dayNum);
 
           if (isAvailable) {
-            // Link tile for available day
             return (
               <a
                 key={dayNum}
@@ -368,7 +538,7 @@ Thanks!`
                   outline: "none",
                   transition: "transform 0.05s ease"
                 }}
-                aria-label={`Request appointment for ${months[currentMonth - 7]} ${dayNum}, ${currentYear}`}
+                aria-label={`Request appointment for ${monthNames[currentMonth]} ${dayNum}, ${currentYear}`}
                 onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
                 onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -378,7 +548,6 @@ Thanks!`
             );
           }
 
-          // Unavailable (red) non-link tile
           return (
             <div key={dayNum} style={{ ...tileBase, backgroundColor: "#dc2626" }}>
               {dayNum}

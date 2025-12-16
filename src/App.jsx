@@ -1,5 +1,157 @@
 import { useState, useRef, useEffect } from "react";
-import SEO from "./SEO";  // ✅ import SEO component
+import SEO from "./SEO"; // ✅ import SEO component
+
+// 🔥 Logo glow/burn CSS (best with transparent PNG)
+const logoStyles = `
+  .logo-wrapper{
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .logo-base{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+
+  /* Glow overlay sits above base and is "cut" by a moving mask band */
+  .logo-glow{
+    position:absolute;
+    inset:0;
+    display:block;
+    width:100%;
+    height:auto;
+    pointer-events:none;
+
+    /* Brighten only the logo pixels */
+    mix-blend-mode: screen;
+
+    /* Always present but masked to a thin moving band */
+    opacity: 1;
+
+    filter:
+      blur(0.6px)
+      brightness(1.2)
+      saturate(1.4)
+      drop-shadow(0 0 10px rgba(255,140,0,0.55))
+      drop-shadow(0 0 18px rgba(255,60,0,0.7));
+
+    /* Masked sweep (webkit required for Chrome/Edge) */
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(0,0,0,0.0) 44%,
+      rgba(0,0,0,1) 50%,
+      rgba(0,0,0,0.0) 56%,
+      transparent 58%,
+      transparent 100%
+    );
+    -webkit-mask-size: 220% 100%;
+    -webkit-mask-position: 0% 0%;
+    -webkit-mask-repeat: no-repeat;
+
+    /* (Firefox mask fallback) */
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(0,0,0,0.0) 44%,
+      rgba(0,0,0,1) 50%,
+      rgba(0,0,0,0.0) 56%,
+      transparent 58%,
+      transparent 100%
+    );
+    mask-size: 220% 100%;
+    mask-position: 0% 0%;
+    mask-repeat: no-repeat;
+
+    /* Sweep happens “from time to time” */
+    animation: burnSweep 18s ease-in-out infinite;
+    will-change: transform, filter, -webkit-mask-position, mask-position;
+  }
+
+  /* Hover ignite: whole logo glows (not just band) */
+  .logo-wrapper.is-hover .logo-glow{
+    -webkit-mask-image: none;
+    mask-image: none;
+
+    filter:
+      blur(1.2px)
+      brightness(1.55)
+      saturate(1.75)
+      drop-shadow(0 0 14px rgba(255,140,0,0.85))
+      drop-shadow(0 0 28px rgba(255,60,0,0.95));
+  }
+
+  /* Subtle extra flicker only during the sweep window */
+  @keyframes burnSweep{
+    /* idle */
+    0%, 68%{
+      opacity: 0;
+      -webkit-mask-position: -120% 0%;
+      mask-position: -120% 0%;
+      filter: blur(0.6px) brightness(1.15) saturate(1.35);
+    }
+
+    /* sweep begins */
+    72%{
+      opacity: 1;
+      -webkit-mask-position: -40% 0%;
+      mask-position: -40% 0%;
+      filter:
+        blur(0.8px)
+        brightness(1.25)
+        saturate(1.45)
+        drop-shadow(0 0 10px rgba(255,140,0,0.55))
+        drop-shadow(0 0 18px rgba(255,60,0,0.75));
+    }
+
+    /* flicker hit */
+    75%{
+      opacity: 0.75;
+    }
+    76%{
+      opacity: 1;
+    }
+
+    /* sweep across */
+    80%{
+      opacity: 1;
+      -webkit-mask-position: 60% 0%;
+      mask-position: 60% 0%;
+      filter:
+        blur(1.0px)
+        brightness(1.35)
+        saturate(1.55)
+        drop-shadow(0 0 12px rgba(255,140,0,0.65))
+        drop-shadow(0 0 22px rgba(255,60,0,0.85));
+    }
+
+    /* finish */
+    86%{
+      opacity: 0.85;
+      -webkit-mask-position: 120% 0%;
+      mask-position: 120% 0%;
+    }
+
+    /* fade back to idle */
+    100%{
+      opacity: 0;
+      -webkit-mask-position: 160% 0%;
+      mask-position: 160% 0%;
+      filter: blur(0.6px) brightness(1.15) saturate(1.35);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .logo-glow{ animation:none; opacity: 0; }
+    .logo-wrapper.is-hover .logo-glow{ opacity: 1; }
+  }
+`;
+
+
 
 // SVG Icons
 const icons = {
@@ -89,34 +241,33 @@ export default function HomePage() {
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
-              
               "Rad_ant.webp",
               "Rad_Controler.webp",
               "dicetower.webp",
-  "grim_group.webp",
-  "grim.webp",
-  "color_roo.webp",
-  "skel_rose.webp",
-  "fal_cor.webp",
-  "dino.webp",
-  "drag2.webp",
-  "dragbig.webp",
-  "frog.webp",
-  "blue_dev.webp",
-  "c_op.webp",
-  "frog2.webp",
-  "Pumpkins_guy.webp",
-  "frogs3.webp",
-  "heyh.webp",
-  "o1.webp",
-  "o2.webp",
-  "o3.webp",
-  "puzzel.webp",
-  "tap.webp",
-  "tap2.webp",
-  "tap3.webp",
-  "turt1.webp",
-  "turt2.webp"
+              "grim_group.webp",
+              "grim.webp",
+              "color_roo.webp",
+              "skel_rose.webp",
+              "fal_cor.webp",
+              "dino.webp",
+              "drag2.webp",
+              "dragbig.webp",
+              "frog.webp",
+              "blue_dev.webp",
+              "c_op.webp",
+              "frog2.webp",
+              "Pumpkins_guy.webp",
+              "frogs3.webp",
+              "heyh.webp",
+              "o1.webp",
+              "o2.webp",
+              "o3.webp",
+              "puzzel.webp",
+              "tap.webp",
+              "tap2.webp",
+              "tap3.webp",
+              "turt1.webp",
+              "turt2.webp"
             ]}
           />
         );
@@ -152,36 +303,36 @@ export default function HomePage() {
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
               "sheri1.webp",
-  "sheri2.webp",
-  "Barb_1.webp",
-  "Barb_2.webp",
-  "IDNC.webp",
-  "Traci.webp",
-  "josh1.webp",
-  "josh2.webp",
-  "janice1.webp",
-  "janice2.webp",
-  "den1.webp",
-  "david1.webp",
-  "david2.webp",
-  "clay.webp",
-  "ecoin.webp",
-  "ecoin2.webp",
-  "lkc.webp",
-  "lorcup.webp",
-  "lorcup2.webp",
-  "cutt_b.webp",
-  "marco.webp",
-  "coin_south.webp",
-  "pwco.webp",
-  "harper1.webp",
-  "harper2.webp",
-  "Noah1.webp",
-  "Noah2.webp",
-  "pops.webp",
-  "scotp.webp",
-  "sscup1.webp",
-  "sscup2.webp"
+              "sheri2.webp",
+              "Barb_1.webp",
+              "Barb_2.webp",
+              "IDNC.webp",
+              "Traci.webp",
+              "josh1.webp",
+              "josh2.webp",
+              "janice1.webp",
+              "janice2.webp",
+              "den1.webp",
+              "david1.webp",
+              "david2.webp",
+              "clay.webp",
+              "ecoin.webp",
+              "ecoin2.webp",
+              "lkc.webp",
+              "lorcup.webp",
+              "lorcup2.webp",
+              "cutt_b.webp",
+              "marco.webp",
+              "coin_south.webp",
+              "pwco.webp",
+              "harper1.webp",
+              "harper2.webp",
+              "Noah1.webp",
+              "Noah2.webp",
+              "pops.webp",
+              "scotp.webp",
+              "sscup1.webp",
+              "sscup2.webp"
             ]}
           />
         );
@@ -194,10 +345,11 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
+      {/* ✅ Inject logo CSS once */}
+      <style>{logoStyles}</style>
+
       {/* Page content with bottom padding so it doesn't get hidden under footer */}
-      <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>
-        {renderPage()}
-      </div>
+      <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>{renderPage()}</div>
 
       {/* Sticky footer */}
       <footer
@@ -243,15 +395,15 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 
   return (
     <div style={{ maxWidth: "600px", margin: "3rem auto", textAlign: "center", color: "white" }}>
-      {/* ✅ SEO tags per service */}
       <SEO
         title={`${title} | 3D Print & Burn`}
         description={desc}
-        image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_better2.png"}
+        image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_transparent.png"}
       />
 
       <h2 style={{ fontSize: "2rem", fontWeight: "600" }}>{title}</h2>
       <p style={{ marginBottom: "1rem" }}>{desc}</p>
+
       <div style={{ background: "#111827", padding: "1rem", borderRadius: "1rem" }}>
         {imageSrc ? (
           <img src={imageSrc} alt={title} style={{ width: "100%", borderRadius: "0.75rem" }} />
@@ -262,14 +414,13 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
           </video>
         )}
       </div>
+
       {extraDesc && <p style={{ marginTop: "1rem", color: "#9ca3af" }}>{extraDesc}</p>}
 
-      {/* ✅ Gallery with thumbnail strip */}
       {galleryFolder && galleryImages && (
         <div style={{ marginTop: "2rem" }}>
           <h3>Gallery</h3>
 
-          {/* Main image */}
           <div style={{ position: "relative", padding: "1rem" }}>
             <img
               src={`${galleryFolder}${galleryImages[galleryIndex]}`}
@@ -294,7 +445,6 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
             </div>
           </div>
 
-          {/* Thumbnail strip */}
           <div
             style={{
               marginTop: "0.75rem",
@@ -357,20 +507,38 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 function SplashPage({ navigate }) {
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      {/* ✅ SEO for homepage */}
       <SEO
         title="3D Print & Burn – Custom Fabrication Services"
         description="Explore 3D printing, scanning, laser engraving, and UV color printing services in Northwest Florida & Lower Alabama."
-        image="/logo_print_burn_better2.png"
+        image="/logo_print_burn_transparent.png"
       />
 
       <div style={{ maxWidth: "min(92vw, 400px)", margin: "0 auto" }}>
-        <img
-          src="/logo_print_burn_better2.png"
-          alt="3D Print & Burn Logo"
-          style={{ display: "block", width: "100%", height: "auto" }}
-        />
+        {/* 🔥 Logo: base + animated glow overlay */}
+<div
+  className="logo-wrapper"
+  onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
+  onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
+>
+  {/* Base logo */}
+  <img
+    src="/logo_print_burn_transparent.png"
+    alt="3D Print & Burn Logo"
+    className="logo-base"
+  />
+
+  {/* Glow overlay */}
+  <img
+    src="/logo_print_burn_transparent.png"
+    alt=""
+    aria-hidden="true"
+    className="logo-glow"
+  />
+</div>
+
+
         <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
           <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
           <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
@@ -382,6 +550,7 @@ function SplashPage({ navigate }) {
       <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>
         Some services require an appointment.
       </p>
+
       <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
         <div onClick={() => navigate("schedule")} style={{ ...cardStyle, maxWidth: "300px" }}>
           {icons.schedule} <div>Click here to see available appointments by day</div>
@@ -394,13 +563,11 @@ function SplashPage({ navigate }) {
 function SchedulePage({ goBack }) {
   const currentYear = 2026;
 
-  // JS Date months: 0=Jan ... 11=Dec
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Start on January
   const [currentMonth, setCurrentMonth] = useState(0);
 
   const changeMonth = (offset) => {
@@ -410,7 +577,6 @@ function SchedulePage({ goBack }) {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const availableDays = availability?.[currentYear]?.[currentMonth] || [];
 
-  // Build a mailto link with prefilled subject/body for available days
   const mailtoForDay = (dayNum) => {
     const dateLabel = `${monthNames[currentMonth]} ${dayNum}, ${currentYear}`;
     const to = "John@3dprintandburn.com";
@@ -449,24 +615,10 @@ Thanks!`
       </p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
-        <button
-          onClick={() => changeMonth(-1)}
-          disabled={currentMonth === 0}
-          style={buttonStyle}
-        >
-          ⬅ Prev
-        </button>
-
-        <button
-          onClick={() => changeMonth(1)}
-          disabled={currentMonth === 11}
-          style={buttonStyle}
-        >
-          Next ➡
-        </button>
+        <button onClick={() => changeMonth(-1)} disabled={currentMonth === 0} style={buttonStyle}>⬅ Prev</button>
+        <button onClick={() => changeMonth(1)} disabled={currentMonth === 11} style={buttonStyle}>Next ➡</button>
       </div>
 
-      {/* Calendar grid with links on available (blue) days only */}
       <div
         style={{
           display: "grid",
@@ -504,7 +656,6 @@ Thanks!`
             );
           }
 
-          // Unavailable (red) non-link tile
           return (
             <div key={dayNum} style={{ ...tileBase, backgroundColor: "#dc2626" }}>
               {dayNum}
@@ -514,14 +665,11 @@ Thanks!`
       </div>
 
       <div style={{ marginTop: "2rem" }}>
-        <button onClick={goBack} style={buttonStyle}>
-          ⬅ Back to Home
-        </button>
+        <button onClick={goBack} style={buttonStyle}>⬅ Back to Home</button>
       </div>
     </div>
   );
 }
-
 
 const cardStyle = {
   background: "#1f2937",
