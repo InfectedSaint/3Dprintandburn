@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import SEO from "./SEO"; // ✅ import SEO component
+import SEO from "./SEO";
 
 // 🔥 Logo glow/burn CSS (best with transparent PNG)
 const logoStyles = `
@@ -74,19 +74,20 @@ const logoStyles = `
 
   /* Hover ignite: whole logo glows (not just band) */
   .logo-wrapper.is-hover .logo-glow{
-  -webkit-mask-image: none;
-  mask-image: none;
+    -webkit-mask-image: none;
+    mask-image: none;
 
-  opacity: 1;              /* 🔥 FORCE VISIBILITY */
-  animation: none;         /* 🔥 STOP WAITING FOR SWEEP */
+    opacity: 1; /* 🔥 FORCE VISIBILITY IMMEDIATELY */
 
-  filter:
-    blur(1.2px)
-    brightness(1.55)
-    saturate(1.75)
-    drop-shadow(0 0 14px rgba(255,140,0,0.85))
-    drop-shadow(0 0 28px rgba(255,60,0,0.95));
-}
+    /* IMPORTANT: don't disable animation here (can "freeze" invisible on some browsers) */
+
+    filter:
+      blur(1.2px)
+      brightness(1.55)
+      saturate(1.75)
+      drop-shadow(0 0 14px rgba(255,140,0,0.85))
+      drop-shadow(0 0 28px rgba(255,60,0,0.95));
+  }
 
   /* Subtle extra flicker only during the sweep window */
   @keyframes burnSweep{
@@ -150,35 +151,73 @@ const logoStyles = `
   }
 `;
 
-// SVG Icons
+// ----- Icon hover palette (base + hover tone)
+const iconColors = {
+  print: { base: "#FFA94D", hover: "#FFB76B" },     // ember
+  scan: { base: "#FFD18A", hover: "#FFE1AE" },      // light ember
+  uvprint: { base: "#FF7A55", hover: "#FF9A7A" },   // warm coral
+  laser: { base: "#FF3C00", hover: "#FF6A3A" },     // hot
+  schedule: { base: "#FFA94D", hover: "#FFB76B" }
+};
+
+function Icon({ name, isHover }) {
+  const color = isHover ? iconColors[name].hover : iconColors[name].base;
+  return (
+    <span
+      style={{
+        color,
+        display: "inline-flex",
+        lineHeight: 0,
+        transition: "color 140ms ease, filter 140ms ease",
+        filter: isHover ? "drop-shadow(0 0 6px rgba(255,120,40,0.6))" : "none"
+      }}
+    >
+      {icons[name]}
+    </span>
+  );
+}
+
+// SVG Icons (brand-consistent: uses currentColor)
 const icons = {
   print: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="4" width="16" height="10" rx="2" stroke="white" strokeWidth="2" />
-      <rect x="6" y="16" width="12" height="4" fill="white" />
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M7 16h10v4H7z" fill="currentColor" />
+      <path d="M7 9h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.55" />
     </svg>
   ),
   scan: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#00FF00" strokeWidth="2" strokeDasharray="4 2" fill="black" />
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" strokeDasharray="5 3" opacity="0.95" />
+      <path d="M7 12h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.65" />
+      <path d="M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
     </svg>
   ),
   uvprint: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="3" width="18" height="18" fill="#ff00ff" stroke="#ffffff" strokeWidth="2" />
-      <text x="6" y="16" fontSize="10" fill="white">UV</text>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" opacity="0.95" />
+      <path d="M8 9h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.55" />
+      <text x="7.1" y="17" fontSize="8.5" fontFamily="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" fill="currentColor" fontWeight="700" letterSpacing="0.5">
+        UV
+      </text>
     </svg>
   ),
   laser: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2v20" stroke="red" strokeWidth="2" />
-      <path d="M4 12h16" stroke="red" strokeWidth="2" />
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3v18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M8 8l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
+      <path d="M16 8l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
     </svg>
   ),
   schedule: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="4" width="18" height="18" rx="2" stroke="white" strokeWidth="2" />
-      <path d="M3 10h18" stroke="white" strokeWidth="2" />
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M4 9h16" stroke="currentColor" strokeWidth="2" opacity="0.7" />
+      <path d="M8 3v4M16 3v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="9" cy="13" r="1" fill="currentColor" opacity="0.75" />
+      <circle cx="12" cy="13" r="1" fill="currentColor" opacity="0.75" />
+      <circle cx="15" cy="13" r="1" fill="currentColor" opacity="0.75" />
     </svg>
   )
 };
@@ -203,7 +242,6 @@ const availability = {
 export default function HomePage() {
   const [page, setPage] = useState("home");
 
-  // ✅ Simple responsive flag for “tight” mobile layout
   const [isSmall, setIsSmall] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth <= 420 : false
   );
@@ -282,15 +320,12 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
-      {/* ✅ Inject logo CSS once */}
       <style>{logoStyles}</style>
 
-      {/* Page content padding adjusted for fixed footer height */}
       <div style={{ flex: 1, padding: "1rem", paddingBottom: "calc(44px + 0.75rem)" }}>
         {renderPage()}
       </div>
 
-      {/* Sticky footer */}
       <footer
         style={{
           position: "fixed",
@@ -444,9 +479,27 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
 }
 
 function SplashPage({ navigate, isSmall }) {
+  const [hovered, setHovered] = useState(null);
+
   const splashCardStyle = isSmall
     ? { ...cardStyle, padding: "1.1rem", gap: "0.4rem" }
     : cardStyle;
+
+  // helper: gives hover + tap behavior consistently
+  const cardInteractive = (key) => ({
+    onMouseEnter: () => setHovered(key),
+    onMouseLeave: () => setHovered(null),
+    onTouchStart: () => {
+      setHovered(key);
+      setTimeout(() => setHovered(null), 900);
+    }
+  });
+
+  const cardHoverStyle = (key) => ({
+    transform: hovered === key ? "translateY(-2px)" : "none",
+    background: hovered === key ? "#273449" : splashCardStyle.background,
+    transition: "transform 140ms ease, background 140ms ease"
+  });
 
   return (
     <div style={{ textAlign: "center", marginTop: isSmall ? "1rem" : "2rem" }}>
@@ -457,32 +510,18 @@ function SplashPage({ navigate, isSmall }) {
       />
 
       <div style={{ maxWidth: `min(92vw, ${isSmall ? "380px" : "400px"})`, margin: "0 auto" }}>
-        {/* 🔥 Logo: base + animated glow overlay */}
         <div
-  className="logo-wrapper"
-  onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
-  onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
-  onTouchStart={(e) => {
-    const el = e.currentTarget;
-    el.classList.add("is-hover");
-
-    // 🔥 Auto-cool after tap
-    setTimeout(() => {
-      el.classList.remove("is-hover");
-    }, 1200);
-  }}
->
-          <img
-            src="/logo_print_burn_transparent.png"
-            alt="3D Print & Burn Logo"
-            className="logo-base"
-          />
-          <img
-            src="/logo_print_burn_transparent.png"
-            alt=""
-            aria-hidden="true"
-            className="logo-glow"
-          />
+          className="logo-wrapper"
+          onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
+          onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
+          onTouchStart={(e) => {
+            const el = e.currentTarget;
+            el.classList.add("is-hover");
+            setTimeout(() => el.classList.remove("is-hover"), 1200);
+          }}
+        >
+          <img src="/logo_print_burn_transparent.png" alt="3D Print & Burn Logo" className="logo-base" />
+          <img src="/logo_print_burn_transparent.png" alt="" aria-hidden="true" className="logo-glow" />
         </div>
 
         <p
@@ -504,10 +543,41 @@ function SplashPage({ navigate, isSmall }) {
             margin: "0 auto"
           }}
         >
-          <div onClick={() => navigate("3dprint")} style={splashCardStyle}>{icons.print} <div>3D Print & Design</div></div>
-          <div onClick={() => navigate("3dscan")} style={splashCardStyle}>{icons.scan} <div>3D Scanning</div></div>
-          <div onClick={() => navigate("uvprint")} style={splashCardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
-          <div onClick={() => navigate("laser")} style={splashCardStyle}>{icons.laser} <div>Laser Engraving</div></div>
+          <div
+            onClick={() => navigate("3dprint")}
+            {...cardInteractive("print")}
+            style={{ ...splashCardStyle, ...cardHoverStyle("print") }}
+          >
+            <Icon name="print" isHover={hovered === "print"} />
+            <div>3D Print & Design</div>
+          </div>
+
+          <div
+            onClick={() => navigate("3dscan")}
+            {...cardInteractive("scan")}
+            style={{ ...splashCardStyle, ...cardHoverStyle("scan") }}
+          >
+            <Icon name="scan" isHover={hovered === "scan"} />
+            <div>3D Scanning</div>
+          </div>
+
+          <div
+            onClick={() => navigate("uvprint")}
+            {...cardInteractive("uvprint")}
+            style={{ ...splashCardStyle, ...cardHoverStyle("uvprint") }}
+          >
+            <Icon name="uvprint" isHover={hovered === "uvprint"} />
+            <div>UV Color Printing</div>
+          </div>
+
+          <div
+            onClick={() => navigate("laser")}
+            {...cardInteractive("laser")}
+            style={{ ...splashCardStyle, ...cardHoverStyle("laser") }}
+          >
+            <Icon name="laser" isHover={hovered === "laser"} />
+            <div>Laser Engraving</div>
+          </div>
         </div>
       </div>
 
@@ -522,8 +592,13 @@ function SplashPage({ navigate, isSmall }) {
       </p>
 
       <div style={{ marginTop: isSmall ? "0.5rem" : "1rem", display: "flex", justifyContent: "center" }}>
-        <div onClick={() => navigate("schedule")} style={{ ...splashCardStyle, maxWidth: "300px" }}>
-          {icons.schedule} <div>Click here to see available appointments by day</div>
+        <div
+          onClick={() => navigate("schedule")}
+          {...cardInteractive("schedule")}
+          style={{ ...splashCardStyle, ...cardHoverStyle("schedule"), maxWidth: "300px" }}
+        >
+          <Icon name="schedule" isHover={hovered === "schedule"} />
+          <div>Click here to see available appointments by day</div>
         </div>
       </div>
     </div>
@@ -589,15 +664,7 @@ Thanks!`
         <button onClick={() => changeMonth(1)} disabled={currentMonth === 11} style={buttonStyle}>Next ➡</button>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "0.5rem",
-          maxWidth: "400px",
-          margin: "0 auto"
-        }}
-      >
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "0.5rem", maxWidth: "400px", margin: "0 auto" }}>
         {Array.from({ length: daysInMonth }, (_, i) => {
           const dayNum = i + 1;
           const isAvailable = availableDays.includes(dayNum);
@@ -652,7 +719,8 @@ const cardStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: "0.5rem"
+  gap: "0.5rem",
+  userSelect: "none"
 };
 
 const buttonStyle = {
