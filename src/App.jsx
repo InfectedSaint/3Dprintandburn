@@ -74,16 +74,19 @@ const logoStyles = `
 
   /* Hover ignite: whole logo glows (not just band) */
   .logo-wrapper.is-hover .logo-glow{
-    -webkit-mask-image: none;
-    mask-image: none;
+  -webkit-mask-image: none;
+  mask-image: none;
 
-    filter:
-      blur(1.2px)
-      brightness(1.55)
-      saturate(1.75)
-      drop-shadow(0 0 14px rgba(255,140,0,0.85))
-      drop-shadow(0 0 28px rgba(255,60,0,0.95));
-  }
+  opacity: 1;              /* 🔥 FORCE VISIBILITY */
+  animation: none;         /* 🔥 STOP WAITING FOR SWEEP */
+
+  filter:
+    blur(1.2px)
+    brightness(1.55)
+    saturate(1.75)
+    drop-shadow(0 0 14px rgba(255,140,0,0.85))
+    drop-shadow(0 0 28px rgba(255,60,0,0.95));
+}
 
   /* Subtle extra flicker only during the sweep window */
   @keyframes burnSweep{
@@ -456,11 +459,19 @@ function SplashPage({ navigate, isSmall }) {
       <div style={{ maxWidth: `min(92vw, ${isSmall ? "380px" : "400px"})`, margin: "0 auto" }}>
         {/* 🔥 Logo: base + animated glow overlay */}
         <div
-          className="logo-wrapper"
-          onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
-          onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
-          style={isSmall ? { maxWidth: "340px", margin: "0 auto" } : undefined}
-        >
+  className="logo-wrapper"
+  onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
+  onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
+  onTouchStart={(e) => {
+    const el = e.currentTarget;
+    el.classList.add("is-hover");
+
+    // 🔥 Auto-cool after tap
+    setTimeout(() => {
+      el.classList.remove("is-hover");
+    }, 1200);
+  }}
+>
           <img
             src="/logo_print_burn_transparent.png"
             alt="3D Print & Burn Logo"
