@@ -109,12 +109,8 @@ const logoStyles = `
     }
 
     /* flicker hit */
-    75%{
-      opacity: 0.75;
-    }
-    76%{
-      opacity: 1;
-    }
+    75%{ opacity: 0.75; }
+    76%{ opacity: 1; }
 
     /* sweep across */
     80%{
@@ -151,8 +147,6 @@ const logoStyles = `
   }
 `;
 
-
-
 // SVG Icons
 const icons = {
   print: (
@@ -188,46 +182,34 @@ const icons = {
 
 const availability = {
   2026: {
-    // January: 8–31
     0: Array.from({ length: 31 - 8 + 1 }, (_, i) => i + 8),
-
-    // February: 1–3
     1: [1, 2, 3],
-
-    // March: 5–31
     2: Array.from({ length: 31 - 5 + 1 }, (_, i) => i + 5),
-
-    // April: 30 only
     3: [30],
-
-    // May: 1–25
     4: Array.from({ length: 25 }, (_, i) => i + 1),
-
-    // June: 25–30
     5: Array.from({ length: 30 - 25 + 1 }, (_, i) => i + 25),
-
-    // July: 1–20
     6: Array.from({ length: 20 }, (_, i) => i + 1),
-
-    // August: 20–31
     7: Array.from({ length: 31 - 20 + 1 }, (_, i) => i + 20),
-
-    // September: 1–15
     8: Array.from({ length: 15 }, (_, i) => i + 1),
-
-    // October: 15–31
     9: Array.from({ length: 31 - 15 + 1 }, (_, i) => i + 15),
-
-    // November: 1–9
     10: Array.from({ length: 9 }, (_, i) => i + 1),
-
-    // December: 10–31
     11: Array.from({ length: 31 - 10 + 1 }, (_, i) => i + 10)
   }
 };
 
 export default function HomePage() {
   const [page, setPage] = useState("home");
+
+  // ✅ Simple responsive flag for “tight” mobile layout
+  const [isSmall, setIsSmall] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth <= 420 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsSmall(window.innerWidth <= 420);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const renderPage = () => {
     switch (page) {
@@ -241,33 +223,11 @@ export default function HomePage() {
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
-              "Rad_ant.webp",
-              "Rad_Controler.webp",
-              "dicetower.webp",
-              "grim_group.webp",
-              "grim.webp",
-              "color_roo.webp",
-              "skel_rose.webp",
-              "fal_cor.webp",
-              "dino.webp",
-              "drag2.webp",
-              "dragbig.webp",
-              "frog.webp",
-              "blue_dev.webp",
-              "c_op.webp",
-              "frog2.webp",
-              "Pumpkins_guy.webp",
-              "frogs3.webp",
-              "heyh.webp",
-              "o1.webp",
-              "o2.webp",
-              "o3.webp",
-              "puzzel.webp",
-              "tap.webp",
-              "tap2.webp",
-              "tap3.webp",
-              "turt1.webp",
-              "turt2.webp"
+              "Rad_ant.webp","Rad_Controler.webp","dicetower.webp","grim_group.webp","grim.webp",
+              "color_roo.webp","skel_rose.webp","fal_cor.webp","dino.webp","drag2.webp","dragbig.webp",
+              "frog.webp","blue_dev.webp","c_op.webp","frog2.webp","Pumpkins_guy.webp","frogs3.webp",
+              "heyh.webp","o1.webp","o2.webp","o3.webp","puzzel.webp","tap.webp","tap2.webp","tap3.webp",
+              "turt1.webp","turt2.webp"
             ]}
           />
         );
@@ -302,54 +262,30 @@ export default function HomePage() {
             videoSrc="/videos/laser.mp4"
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
-              "sheri1.webp",
-              "sheri2.webp",
-              "Barb_1.webp",
-              "Barb_2.webp",
-              "IDNC.webp",
-              "Traci.webp",
-              "josh1.webp",
-              "josh2.webp",
-              "janice1.webp",
-              "janice2.webp",
-              "den1.webp",
-              "david1.webp",
-              "david2.webp",
-              "clay.webp",
-              "ecoin.webp",
-              "ecoin2.webp",
-              "lkc.webp",
-              "lorcup.webp",
-              "lorcup2.webp",
-              "cutt_b.webp",
-              "marco.webp",
-              "coin_south.webp",
-              "pwco.webp",
-              "harper1.webp",
-              "harper2.webp",
-              "Noah1.webp",
-              "Noah2.webp",
-              "pops.webp",
-              "scotp.webp",
-              "sscup1.webp",
-              "sscup2.webp"
+              "sheri1.webp","sheri2.webp","Barb_1.webp","Barb_2.webp","IDNC.webp","Traci.webp",
+              "josh1.webp","josh2.webp","janice1.webp","janice2.webp","den1.webp","david1.webp",
+              "david2.webp","clay.webp","ecoin.webp","ecoin2.webp","lkc.webp","lorcup.webp","lorcup2.webp",
+              "cutt_b.webp","marco.webp","coin_south.webp","pwco.webp","harper1.webp","harper2.webp",
+              "Noah1.webp","Noah2.webp","pops.webp","scotp.webp","sscup1.webp","sscup2.webp"
             ]}
           />
         );
       case "schedule":
         return <SchedulePage goBack={() => setPage("home")} />;
       default:
-        return <SplashPage navigate={setPage} />;
+        return <SplashPage navigate={setPage} isSmall={isSmall} />;
     }
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
+    <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", backgroundColor: "#000000" }}>
       {/* ✅ Inject logo CSS once */}
       <style>{logoStyles}</style>
 
-      {/* Page content with bottom padding so it doesn't get hidden under footer */}
-      <div style={{ flex: 1, padding: "1rem", paddingBottom: "3rem" }}>{renderPage()}</div>
+      {/* Page content padding adjusted for fixed footer height */}
+      <div style={{ flex: 1, padding: "1rem", paddingBottom: "calc(44px + 0.75rem)" }}>
+        {renderPage()}
+      </div>
 
       {/* Sticky footer */}
       <footer
@@ -504,55 +440,78 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
   );
 }
 
-function SplashPage({ navigate }) {
+function SplashPage({ navigate, isSmall }) {
+  const splashCardStyle = isSmall
+    ? { ...cardStyle, padding: "1.1rem", gap: "0.4rem" }
+    : cardStyle;
+
   return (
-    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+    <div style={{ textAlign: "center", marginTop: isSmall ? "1rem" : "2rem" }}>
       <SEO
         title="3D Print & Burn – Custom Fabrication Services"
         description="Explore 3D printing, scanning, laser engraving, and UV color printing services in Northwest Florida & Lower Alabama."
         image="/logo_print_burn_transparent.png"
       />
 
-      <div style={{ maxWidth: "min(92vw, 400px)", margin: "0 auto" }}>
+      <div style={{ maxWidth: `min(92vw, ${isSmall ? "380px" : "400px"})`, margin: "0 auto" }}>
         {/* 🔥 Logo: base + animated glow overlay */}
-<div
-  className="logo-wrapper"
-  onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
-  onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
->
-  {/* Base logo */}
-  <img
-    src="/logo_print_burn_transparent.png"
-    alt="3D Print & Burn Logo"
-    className="logo-base"
-  />
+        <div
+          className="logo-wrapper"
+          onMouseEnter={(e) => e.currentTarget.classList.add("is-hover")}
+          onMouseLeave={(e) => e.currentTarget.classList.remove("is-hover")}
+          style={isSmall ? { maxWidth: "340px", margin: "0 auto" } : undefined}
+        >
+          <img
+            src="/logo_print_burn_transparent.png"
+            alt="3D Print & Burn Logo"
+            className="logo-base"
+          />
+          <img
+            src="/logo_print_burn_transparent.png"
+            alt=""
+            aria-hidden="true"
+            className="logo-glow"
+          />
+        </div>
 
-  {/* Glow overlay */}
-  <img
-    src="/logo_print_burn_transparent.png"
-    alt=""
-    aria-hidden="true"
-    className="logo-glow"
-  />
-</div>
+        <p
+          style={{
+            color: "#4b5563",
+            fontSize: isSmall ? "1rem" : "1.125rem",
+            margin: isSmall ? "0.5rem 0 0.75rem" : "1rem 0"
+          }}
+        >
+          Custom Fabrication Services
+        </p>
 
-
-        <p style={{ color: "#4b5563", fontSize: "1.125rem", margin: "1rem 0" }}>Custom Fabrication Services</p>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", maxWidth: "400px", margin: "0 auto" }}>
-          <div onClick={() => navigate("3dprint")} style={cardStyle}>{icons.print} <div>3D Print & Design</div></div>
-          <div onClick={() => navigate("3dscan")} style={cardStyle}>{icons.scan} <div>3D Scanning</div></div>
-          <div onClick={() => navigate("uvprint")} style={cardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
-          <div onClick={() => navigate("laser")} style={cardStyle}>{icons.laser} <div>Laser Engraving</div></div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: isSmall ? "0.75rem" : "1rem",
+            maxWidth: "400px",
+            margin: "0 auto"
+          }}
+        >
+          <div onClick={() => navigate("3dprint")} style={splashCardStyle}>{icons.print} <div>3D Print & Design</div></div>
+          <div onClick={() => navigate("3dscan")} style={splashCardStyle}>{icons.scan} <div>3D Scanning</div></div>
+          <div onClick={() => navigate("uvprint")} style={splashCardStyle}>{icons.uvprint} <div>UV Color Printing</div></div>
+          <div onClick={() => navigate("laser")} style={splashCardStyle}>{icons.laser} <div>Laser Engraving</div></div>
         </div>
       </div>
 
-      <p style={{ color: "#9ca3af", marginTop: "1rem", marginBottom: "1rem" }}>
+      <p
+        style={{
+          color: "#9ca3af",
+          marginTop: isSmall ? "0.75rem" : "1rem",
+          marginBottom: isSmall ? "0.5rem" : "1rem"
+        }}
+      >
         Some services require an appointment.
       </p>
 
-      <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
-        <div onClick={() => navigate("schedule")} style={{ ...cardStyle, maxWidth: "300px" }}>
+      <div style={{ marginTop: isSmall ? "0.5rem" : "1rem", display: "flex", justifyContent: "center" }}>
+        <div onClick={() => navigate("schedule")} style={{ ...splashCardStyle, maxWidth: "300px" }}>
           {icons.schedule} <div>Click here to see available appointments by day</div>
         </div>
       </div>
