@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Print & Burn – Burn Sweep Tuner</title>
+  <style>
+    :root{
+      --duration: 18;
+      --idleStart: 68;
+      --sweepStart: 72;
+      --sweepMid: 80;
+      --sweepEnd: 86;
+
+      --bandSize: 220; /* percent */
+      --bandCenter: 50; /* percent */
+      --bandWidth: 12; /* percent total width around center */
+
+      --blur: 0.9;
+      --brightness: 1.35;
+      --saturate: 1.55;
+
+      --shadow1Radius: 12;
+      --shadow1Alpha: 0.65;
+      --shadow2Radius: 22;
+      --shadow2Alpha: 0.85;
+
+      --flicker1: 0.75;
+      --flicker2: 1.00;
+      --flicker3: 0.55;
+      --flicker4: 0.95;
+    }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#0b0f19;
+      color:#e5e7eb;
+    }
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+    .card{
+      background:#111827;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    h1{ font-size: 18px; margin: 0 0 10px; }
+    h2{ font-size: 14px; margin: 14px 0 8px; color:#cbd5e1; }
+    .row{ display:flex; align-items:center; justify-content:space-between; gap: 10px; margin: 8px 0; }
+    .row label{ font-size: 12px; color:#cbd5e1; }
+    .row input[type="range"]{ width: 210px; }
+    .row input[type="number"], .row input[type="text"]{
+      width: 110px;
+      background:#0b1220;
+      color:#e5e7eb;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .btn{
+      background:#0b1220;
+      color:#e5e7eb;
+      border:1px solid rgba(255,255,255,0.16);
+      border-radius: 10px;
+      padding: 9px 10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .btn:hover{ border-color: rgba(255,255,255,0.28); }
+    textarea{
+      width:100%;
+      min-height: 220px;
+      resize: vertical;
+      background:#0b1220;
+      color:#e5e7eb;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    /* ===== Preview ===== */
+    .stage{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 360px;
+      padding: 18px;
+      background: radial-gradient(1200px 600px at 50% 0%, rgba(255,140,0,0.08), transparent 60%),
+                  linear-gradient(#000, #0b0f19);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+      overflow:hidden;
+    }
+    .logo-wrapper{
+      position: relative;
+      width: min(520px, 88%);
+      display:inline-block;
+    }
+    .logo-base{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+    .logo-glow{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:auto;
+      pointer-events:none;
+      mix-blend-mode: screen;
+
+      opacity: 1;
+      filter:
+        blur(calc(var(--blur) * 1px))
+        brightness(var(--brightness))
+        saturate(var(--saturate))
+        drop-shadow(0 0 calc(var(--shadow1Radius) * 1px) rgba(255,140,0,var(--shadow1Alpha)))
+        drop-shadow(0 0 calc(var(--shadow2Radius) * 1px) rgba(255,60,0,var(--shadow2Alpha)));
+
+      /* computed band */
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent calc(var(--bandCenter)*1% - var(--bandWidth)*0.5% - 2%),
+        rgba(0,0,0,0.0) calc(var(--bandCenter)*1% - var(--bandWidth)*0.5%),
+        rgba(0,0,0,1)   calc(var(--bandCenter)*1%),
+        rgba(0,0,0,0.0) calc(var(--bandCenter)*1% + var(--bandWidth)*0.5%),
+        transparent calc(var(--bandCenter)*1% + var(--bandWidth)*0.5% + 2%),
+        transparent 100%
+      );
+      -webkit-mask-size: calc(var(--bandSize) * 1%) 100%;
+      -webkit-mask-position: -120% 0%;
+      -webkit-mask-repeat: no-repeat;
+
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent calc(var(--bandCenter)*1% - var(--bandWidth)*0.5% - 2%),
+        rgba(0,0,0,0.0) calc(var(--bandCenter)*1% - var(--bandWidth)*0.5%),
+        rgba(0,0,0,1)   calc(var(--bandCenter)*1%),
+        rgba(0,0,0,0.0) calc(var(--bandCenter)*1% + var(--bandWidth)*0.5%),
+        transparent calc(var(--bandCenter)*1% + var(--bandWidth)*0.5% + 2%),
+        transparent 100%
+      );
+      mask-size: calc(var(--bandSize) * 1%) 100%;
+      mask-position: -120% 0%;
+      mask-repeat: no-repeat;
+
+      animation: burnSweep calc(var(--duration) * 1s) ease-in-out infinite;
+      will-change: -webkit-mask-position, mask-position, opacity, filter;
+    }
+
+    .logo-wrapper.is-hover .logo-glow{
+      -webkit-mask-image:none;
+      mask-image:none;
+      opacity: 1;
+      filter:
+        blur(calc((var(--blur) + 0.4) * 1px))
+        brightness(calc(var(--brightness) + 0.2))
+        saturate(calc(var(--saturate) + 0.25))
+        drop-shadow(0 0 calc((var(--shadow1Radius) + 4) * 1px) rgba(255,140,0, min(1, calc(var(--shadow1Alpha) + 0.2))))
+        drop-shadow(0 0 calc((var(--shadow2Radius) + 6) * 1px) rgba(255,60,0,  min(1, calc(var(--shadow2Alpha) + 0.15))));
+    }
+
+    @keyframes burnSweep{
+      0%, calc(var(--idleStart) * 1%){
+        opacity: 0;
+        -webkit-mask-position: -120% 0%;
+        mask-position: -120% 0%;
+      }
+
+      calc(var(--sweepStart) * 1%){
+        opacity: 1;
+        -webkit-mask-position: -40% 0%;
+        mask-position: -40% 0%;
+      }
+
+      /* flicker segment (small opacity pops) */
+      calc(var(--sweepStart) * 1% + 3%){ opacity: var(--flicker1); }
+      calc(var(--sweepStart) * 1% + 4%){ opacity: var(--flicker2); }
+      calc(var(--sweepStart) * 1% + 5%){ opacity: var(--flicker3); }
+      calc(var(--sweepStart) * 1% + 6%){ opacity: var(--flicker4); }
+
+      calc(var(--sweepMid) * 1%){
+        opacity: 1;
+        -webkit-mask-position: 60% 0%;
+        mask-position: 60% 0%;
+      }
+
+      calc(var(--sweepEnd) * 1%){
+        opacity: 0.85;
+        -webkit-mask-position: 120% 0%;
+        mask-position: 120% 0%;
+      }
+
+      100%{
+        opacity: 0;
+        -webkit-mask-position: 160% 0%;
+        mask-position: 160% 0%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Burn Sweep Tuner</h1>
+      <div class="row">
+        <label>Logo URL (served from your Vite /public)</label>
+      </div>
+      <div class="row">
+        <input id="logoUrl" type="text" value="/logo_print_burn_transparent.png" style="width: 100%;" />
+      </div>
+      <div class="row">
+        <button class="btn" id="applyLogo">Apply Logo</button>
+        <button class="btn" id="copyCss">Copy CSS snippet</button>
+      </div>
+
+      <h2>Timing</h2>
+      <div class="row"><label>Duration (seconds)</label><input id="duration" type="range" min="6" max="40" step="1"><input id="durationN" type="number" min="6" max="40" step="1"></div>
+      <div class="row"><label>Idle start (%)</label><input id="idleStart" type="range" min="0" max="90" step="1"><input id="idleStartN" type="number" min="0" max="90" step="1"></div>
+      <div class="row"><label>Sweep start (%)</label><input id="sweepStart" type="range" min="0" max="95" step="1"><input id="sweepStartN" type="number" min="0" max="95" step="1"></div>
+      <div class="row"><label>Sweep mid (%)</label><input id="sweepMid" type="range" min="0" max="99" step="1"><input id="sweepMidN" type="number" min="0" max="99" step="1"></div>
+      <div class="row"><label>Sweep end (%)</label><input id="sweepEnd" type="range" min="0" max="100" step="1"><input id="sweepEndN" type="number" min="0" max="100" step="1"></div>
+
+      <h2>Band shape</h2>
+      <div class="row"><label>Band size (%)</label><input id="bandSize" type="range" min="150" max="320" step="1"><input id="bandSizeN" type="number" min="150" max="320" step="1"></div>
+      <div class="row"><label>Band center (%)</label><input id="bandCenter" type="range" min="40" max="60" step="1"><input id="bandCenterN" type="number" min="40" max="60" step="1"></div>
+      <div class="row"><label>Band width (%)</label><input id="bandWidth" type="range" min="6" max="30" step="1"><input id="bandWidthN" type="number" min="6" max="30" step="1"></div>
+
+      <h2>Heat</h2>
+      <div class="row"><label>Blur (px)</label><input id="blur" type="range" min="0" max="2.5" step="0.05"><input id="blurN" type="number" min="0" max="2.5" step="0.05"></div>
+      <div class="row"><label>Brightness</label><input id="brightness" type="range" min="1" max="2.0" step="0.01"><input id="brightnessN" type="number" min="1" max="2.0" step="0.01"></div>
+      <div class="row"><label>Saturate</label><input id="saturate" type="range" min="1" max="2.5" step="0.01"><input id="saturateN" type="number" min="1" max="2.5" step="0.01"></div>
+
+      <h2>Flicker</h2>
+      <div class="row"><label>Flicker 1 opacity</label><input id="flicker1" type="range" min="0" max="1" step="0.01"><input id="flicker1N" type="number" min="0" max="1" step="0.01"></div>
+      <div class="row"><label>Flicker 2 opacity</label><input id="flicker2" type="range" min="0" max="1" step="0.01"><input id="flicker2N" type="number" min="0" max="1" step="0.01"></div>
+      <div class="row"><label>Flicker 3 opacity</label><input id="flicker3" type="range" min="0" max="1" step="0.01"><input id="flicker3N" type="number" min="0" max="1" step="0.01"></div>
+      <div class="row"><label>Flicker 4 opacity</label><input id="flicker4" type="range" min="0" max="1" step="0.01"><input id="flicker4N" type="number" min="0" max="1" step="0.01"></div>
+
+      <h2>CSS to paste</h2>
+      <textarea id="cssOut" readonly></textarea>
+      <p style="margin:8px 0 0; font-size:12px; color:#9ca3af;">
+        Tip: hover the preview logo to force “ignite”.
+      </p>
+    </div>
+
+    <div class="card">
+      <h1>Preview</h1>
+      <div class="stage">
+        <div class="logo-wrapper" id="logoWrap">
+          <img id="baseImg" class="logo-base" src="/logo_print_burn_transparent.png" alt="logo" />
+          <img id="glowImg" class="logo-glow" src="/logo_print_burn_transparent.png" alt="" aria-hidden="true"/>
+        </div>
+      </div>
+      <p style="margin:10px 0 0; font-size:12px; color:#9ca3af;">
+        If the image doesn't load, verify the URL exists (e.g., <code>/logo_print_burn_transparent.png</code>) and that you’re serving from your Vite <code>public/</code>.
+      </p>
+    </div>
+  </div>
+
+<script>
+  const root = document.documentElement;
+  const pairs = [
+    "duration","idleStart","sweepStart","sweepMid","sweepEnd",
+    "bandSize","bandCenter","bandWidth",
+    "blur","brightness","saturate",
+    "flicker1","flicker2","flicker3","flicker4"
+  ];
+
+  function setVar(name, value){
+    root.style.setProperty("--"+name, String(value));
+  }
+
+  function syncPair(id){
+    const r = document.getElementById(id);
+    const n = document.getElementById(id+"N");
+    if(!r || !n) return;
+
+    const apply = (v) => {
+      r.value = v;
+      n.value = v;
+      setVar(id, v);
+      renderCss();
+    };
+    r.addEventListener("input", () => apply(r.value));
+    n.addEventListener("input", () => apply(n.value));
+    // init
+    apply(getComputedStyle(root).getPropertyValue("--"+id).trim());
+  }
+
+  function renderCss(){
+    const g = (k) => getComputedStyle(root).getPropertyValue("--"+k).trim();
+    const css = `
+/* Paste these values into your logoStyles (burn sweep) */
+.logo-glow{
+  animation: burnSweep ${g("duration")}s ease-in-out infinite;
+  filter:
+    blur(${g("blur")}px)
+    brightness(${g("brightness")})
+    saturate(${g("saturate")})
+    drop-shadow(0 0 ${g("shadow1Radius")||"12"}px rgba(255,140,0,${g("shadow1Alpha")||"0.65"}))
+    drop-shadow(0 0 ${g("shadow2Radius")||"22"}px rgba(255,60,0,${g("shadow2Alpha")||"0.85"}));
+  -webkit-mask-size: ${g("bandSize")}% 100%;
+  mask-size: ${g("bandSize")}% 100%;
+}
+
+/* Keyframe timing + flicker values */
+@keyframes burnSweep{
+  0%, ${g("idleStart")}% { opacity: 0; -webkit-mask-position: -120% 0%; mask-position: -120% 0%; }
+  ${g("sweepStart")}% { opacity: 1; -webkit-mask-position: -40% 0%; mask-position: -40% 0%; }
+
+  ${Number(g("sweepStart"))+3}% { opacity: ${g("flicker1")}; }
+  ${Number(g("sweepStart"))+4}% { opacity: ${g("flicker2")}; }
+  ${Number(g("sweepStart"))+5}% { opacity: ${g("flicker3")}; }
+  ${Number(g("sweepStart"))+6}% { opacity: ${g("flicker4")}; }
+
+  ${g("sweepMid")}% { opacity: 1; -webkit-mask-position: 60% 0%; mask-position: 60% 0%; }
+  ${g("sweepEnd")}% { opacity: 0.85; -webkit-mask-position: 120% 0%; mask-position: 120% 0%; }
+  100% { opacity: 0; -webkit-mask-position: 160% 0%; mask-position: 160% 0%; }
+}`.trim();
+
+    document.getElementById("cssOut").value = css;
+  }
+
+  // init sliders
+  pairs.forEach(syncPair);
+  renderCss();
+
+  // hover ignite
+  const wrap = document.getElementById("logoWrap");
+  wrap.addEventListener("mouseenter", ()=> wrap.classList.add("is-hover"));
+  wrap.addEventListener("mouseleave", ()=> wrap.classList.remove("is-hover"));
+
+  // change logo url
+  document.getElementById("applyLogo").addEventListener("click", ()=>{
+    const url = document.getElementById("logoUrl").value.trim() || "/logo_print_burn_transparent.png";
+    document.getElementById("baseImg").src = url;
+    document.getElementById("glowImg").src = url;
+  });
+
+  // copy css
+  document.getElementById("copyCss").addEventListener("click", async ()=>{
+    const txt = document.getElementById("cssOut").value;
+    try{
+      await navigator.clipboard.writeText(txt);
+      alert("Copied CSS snippet to clipboard!");
+    }catch(e){
+      alert("Copy failed. Select the text and copy manually.");
+    }
+  });
+</script>
+</body>
+</html>
