@@ -35,12 +35,42 @@ const icons = {
 };
 
 const availability = {
-  2025: {
-    7: Array.from({ length: 19 }, (_, i) => i + 1),
-    8: Array.from({ length: 14 }, (_, i) => i + 17),
-    9: Array.from({ length: 15 }, (_, i) => i + 1),
-    10: Array.from({ length: 18 }, (_, i) => i + 13),
-    11: Array.from({ length: 9 }, (_, i) => i + 1),
+  2026: {
+    // January: 8–31
+    0: Array.from({ length: 31 - 8 + 1 }, (_, i) => i + 8),
+
+    // February: 1–3
+    1: [1, 2, 3],
+
+    // March: 5–31
+    2: Array.from({ length: 31 - 5 + 1 }, (_, i) => i + 5),
+
+    // April: 30 only
+    3: [30],
+
+    // May: 1–25
+    4: Array.from({ length: 25 }, (_, i) => i + 1),
+
+    // June: 25–30
+    5: Array.from({ length: 30 - 25 + 1 }, (_, i) => i + 25),
+
+    // July: 1–20
+    6: Array.from({ length: 20 }, (_, i) => i + 1),
+
+    // August: 20–31
+    7: Array.from({ length: 31 - 20 + 1 }, (_, i) => i + 20),
+
+    // September: 1–15
+    8: Array.from({ length: 15 }, (_, i) => i + 1),
+
+    // October: 15–31
+    9: Array.from({ length: 31 - 15 + 1 }, (_, i) => i + 15),
+
+    // November: 1–9
+    10: Array.from({ length: 9 }, (_, i) => i + 1),
+
+    // December: 10–31
+    11: Array.from({ length: 31 - 10 + 1 }, (_, i) => i + 10)
   }
 };
 
@@ -362,24 +392,31 @@ function SplashPage({ navigate }) {
 }
 
 function SchedulePage({ goBack }) {
-  const [currentMonth, setCurrentMonth] = useState(7);
-  const currentYear = 2025;
-  const months = ["August", "September", "October", "November", "December"];
+  const currentYear = 2026;
+
+  // JS Date months: 0=Jan ... 11=Dec
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Start on January
+  const [currentMonth, setCurrentMonth] = useState(0);
 
   const changeMonth = (offset) => {
-    setCurrentMonth((prev) => Math.min(11, Math.max(7, prev + offset)));
+    setCurrentMonth((prev) => Math.min(11, Math.max(0, prev + offset)));
   };
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const availableDays = availability[currentYear][currentMonth] || [];
+  const availableDays = availability?.[currentYear]?.[currentMonth] || [];
 
-  // 🔗 Build a mailto link with prefilled subject/body for available days
+  // Build a mailto link with prefilled subject/body for available days
   const mailtoForDay = (dayNum) => {
-    const dateLabel = `${months[currentMonth - 7]} ${dayNum}, ${currentYear}`;
+    const dateLabel = `${monthNames[currentMonth]} ${dayNum}, ${currentYear}`;
     const to = "John@3dprintandburn.com";
     const subject = encodeURIComponent(`Appointment request for ${dateLabel}`);
     const body = encodeURIComponent(
-      `Hello 3D Print & Burn,
+`Hello 3D Print & Burn,
 
 I'd like to request an appointment on ${dateLabel}.
 
@@ -401,7 +438,8 @@ Thanks!`
 
   return (
     <div style={{ color: "white", textAlign: "center" }}>
-      <h2>{months[currentMonth - 7]} 2025</h2>
+      <h2>{monthNames[currentMonth]} {currentYear}</h2>
+
       <p style={{ maxWidth: "600px", margin: "0 auto 1rem", color: "#9ca3af" }}>
         Blue days are available. Red days are unavailable. To request an appointment, click a blue day to open your email client (or email{" "}
         <a href="mailto:John@3dprintandburn.com" style={{ color: "#60a5fa" }}>
@@ -409,12 +447,26 @@ Thanks!`
         </a>
         ).
       </p>
+
       <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
-        <button onClick={() => changeMonth(-1)} disabled={currentMonth === 7} style={buttonStyle}>⬅ Prev</button>
-        <button onClick={() => changeMonth(1)} disabled={currentMonth === 11} style={buttonStyle}>Next ➡</button>
+        <button
+          onClick={() => changeMonth(-1)}
+          disabled={currentMonth === 0}
+          style={buttonStyle}
+        >
+          ⬅ Prev
+        </button>
+
+        <button
+          onClick={() => changeMonth(1)}
+          disabled={currentMonth === 11}
+          style={buttonStyle}
+        >
+          Next ➡
+        </button>
       </div>
 
-      {/* 📅 Calendar grid with links on available (blue) days only */}
+      {/* Calendar grid with links on available (blue) days only */}
       <div
         style={{
           display: "grid",
@@ -429,7 +481,6 @@ Thanks!`
           const isAvailable = availableDays.includes(dayNum);
 
           if (isAvailable) {
-            // Link tile for available day
             return (
               <a
                 key={dayNum}
@@ -443,7 +494,7 @@ Thanks!`
                   outline: "none",
                   transition: "transform 0.05s ease"
                 }}
-                aria-label={`Request appointment for ${months[currentMonth - 7]} ${dayNum}, ${currentYear}`}
+                aria-label={`Request appointment for ${monthNames[currentMonth]} ${dayNum}, ${currentYear}`}
                 onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
                 onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -463,11 +514,14 @@ Thanks!`
       </div>
 
       <div style={{ marginTop: "2rem" }}>
-        <button onClick={goBack} style={buttonStyle}>⬅ Back to Home</button>
+        <button onClick={goBack} style={buttonStyle}>
+          ⬅ Back to Home
+        </button>
       </div>
     </div>
   );
 }
+
 
 const cardStyle = {
   background: "#1f2937",
