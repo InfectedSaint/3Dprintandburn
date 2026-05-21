@@ -239,8 +239,41 @@ const availability = {
   }
 };
 
+const pageRoutes = {
+  home: "/",
+  "3dprint": "/3d-print",
+  "3dscan": "/3d-scan",
+  uvprint: "/uv-printing",
+  laser: "/laser-engraving",
+  schedule: "/schedule"
+};
+
+const routePages = Object.fromEntries(Object.entries(pageRoutes).map(([page, route]) => [route, page]));
+
+function pageFromLocation() {
+  if (typeof window === "undefined") return "home";
+  return routePages[window.location.pathname] || "home";
+}
+
+function quoteMailto(serviceTitle) {
+  const subject = encodeURIComponent(`Project request for ${serviceTitle}`);
+  const body = encodeURIComponent(
+`Hello 3D Print & Burn,
+
+I'd like to ask about ${serviceTitle}.
+
+Project idea:
+Quantity:
+Timeline:
+Notes:
+
+Thanks!`
+  );
+  return `mailto:John@3dprintandburn.com?subject=${subject}&body=${body}`;
+}
+
 export default function HomePage() {
-  const [page, setPage] = useState("home");
+  const [page, setPage] = useState(pageFromLocation);
 
   const [isSmall, setIsSmall] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth <= 420 : false
@@ -252,6 +285,21 @@ export default function HomePage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  useEffect(() => {
+    const onPopState = () => setPage(pageFromLocation());
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const navigate = (nextPage) => {
+    const nextRoute = pageRoutes[nextPage] || pageRoutes.home;
+    if (window.location.pathname !== nextRoute) {
+      window.history.pushState({}, "", nextRoute);
+    }
+    setPage(nextPage);
+    window.scrollTo(0, 0);
+  };
+
   const renderPage = () => {
     switch (page) {
       case "3dprint":
@@ -260,7 +308,8 @@ export default function HomePage() {
             title="3D Print & Design"
             desc="High-quality FDM and resin printing, custom modeling, and prototyping."
             extraDesc="We support a wide range of engineering-grade materials including carbon fiber PLA, nylon, ABS, and various PLA blends. For ultra-high-detail work, we offer 16K resin printing with specialty resins available on demand—from dental-grade to lost wax casting models."
-            goBack={() => setPage("home")}
+            route={pageRoutes["3dprint"]}
+            navigate={navigate}
             videoSrc="/videos/3dprint.mp4"
             galleryFolder="/gallery/3dprint_gallery/"
             galleryImages={[
@@ -278,7 +327,8 @@ export default function HomePage() {
             title="3D Scanning"
             desc="Accurate scanning for both large and small items. Great for duplicates or custom work."
             extraDesc="We offer detailed scans for everything from jewelry and small keepsakes to full face and body scans, automotive components, and dashboard panels—perfect for personalization, replication, and repair."
-            goBack={() => setPage("home")}
+            route={pageRoutes["3dscan"]}
+            navigate={navigate}
             videoSrc="/videos/3dscan.mp4"
             galleryFolder="/gallery/3dscan_gallery/"
             galleryImages={["Scan_Pendent.webp"]}
@@ -289,7 +339,8 @@ export default function HomePage() {
           <ServicePage
             title="UV Color Printing"
             desc="We are very happy to announce that we have received our new UV printer and are now accepting UV printing orders while we continue learning the ins and outs of the machine. UV printing creates vibrant full-color designs on cups, signs, keepsakes, and more using UV-cured ink. Please check out our scheduling page and send us an email if there is anything we can help you make!"
-            goBack={() => setPage("home")}
+            route={pageRoutes.uvprint}
+            navigate={navigate}
             imageSrc="/images/uvprinter.png"
             galleryFolder="/gallery/uvprint_gallery/"
             galleryImages={[
@@ -326,7 +377,8 @@ export default function HomePage() {
             title="Laser Engraving & Etching"
             desc="Detailed laser work on wood, metal, and acrylic with high precision."
             extraDesc="Our laser services span thousands of personalized items—leather keychains, bottle openers, jewelry, pendants, book covers, knives, signage, stainless steel cups, glassware, tools, battery labeling, picture frames, and more."
-            goBack={() => setPage("home")}
+            route={pageRoutes.laser}
+            navigate={navigate}
             videoSrc="/videos/laser.mp4"
             galleryFolder="/gallery/laser_gallery/"
             galleryImages={[
@@ -339,9 +391,9 @@ export default function HomePage() {
           />
         );
       case "schedule":
-        return <SchedulePage goBack={() => setPage("home")} />;
+        return <SchedulePage goBack={() => navigate("home")} />;
       default:
-        return <SplashPage navigate={setPage} isSmall={isSmall} />;
+        return <SplashPage navigate={navigate} isSmall={isSmall} />;
     }
   };
 
@@ -391,7 +443,7 @@ function normalizeGalleryItem(item) {
   return typeof item === "string" ? { file: item } : item;
 }
 
-function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galleryFolder, galleryImages }) {
+function ServicePage({ title, desc, extraDesc, route, navigate, videoSrc, imageSrc, galleryFolder, galleryImages }) {
   const videoRef = useRef(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const normalizedGalleryItems = galleryImages?.map(normalizeGalleryItem);
@@ -416,6 +468,7 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
         title={`${title} | 3D Print & Burn`}
         description={desc}
         image={imageSrc || (galleryFolder && seoGalleryImage && `${galleryFolder}${seoGalleryImage}`) || "/logo_print_burn_transparent.png"}
+        url={route}
       />
 
       <h2 style={{ fontSize: "2rem", fontWeight: "600" }}>{title}</h2>
@@ -568,8 +621,12 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
         </div>
       )}
 
-      <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
-        <button onClick={goBack} style={buttonStyle}>⬅ Back</button>
+      <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+        <a href={quoteMailto(title)} style={{ ...buttonStyle, textDecoration: "none", display: "inline-block" }}>
+          Request a Quote
+        </a>
+        <button onClick={() => navigate("schedule")} style={buttonStyle}>Schedule</button>
+        <button onClick={() => navigate("home")} style={buttonStyle}>⬅ Back</button>
         <button onClick={() => window.scrollTo(0, 0)} style={buttonStyle}>⬆ Top</button>
       </div>
     </div>
@@ -641,41 +698,45 @@ function SplashPage({ navigate, isSmall }) {
             margin: "0 auto"
           }}
         >
-          <div
+          <button
+            type="button"
             onClick={() => navigate("3dprint")}
             {...cardInteractive("print")}
             style={{ ...splashCardStyle, ...cardHoverStyle("print") }}
           >
             <Icon name="print" isHover={hovered === "print"} />
             <div>3D Print & Design</div>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => navigate("3dscan")}
             {...cardInteractive("scan")}
             style={{ ...splashCardStyle, ...cardHoverStyle("scan") }}
           >
             <Icon name="scan" isHover={hovered === "scan"} />
             <div>3D Scanning</div>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => navigate("uvprint")}
             {...cardInteractive("uvprint")}
             style={{ ...splashCardStyle, ...cardHoverStyle("uvprint") }}
           >
             <Icon name="uvprint" isHover={hovered === "uvprint"} />
             <div>UV Color Printing</div>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             onClick={() => navigate("laser")}
             {...cardInteractive("laser")}
             style={{ ...splashCardStyle, ...cardHoverStyle("laser") }}
           >
             <Icon name="laser" isHover={hovered === "laser"} />
             <div>Laser Engraving</div>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -690,14 +751,15 @@ function SplashPage({ navigate, isSmall }) {
       </p>
 
       <div style={{ marginTop: isSmall ? "0.5rem" : "1rem", display: "flex", justifyContent: "center" }}>
-        <div
+        <button
+          type="button"
           onClick={() => navigate("schedule")}
           {...cardInteractive("schedule")}
           style={{ ...splashCardStyle, ...cardHoverStyle("schedule"), maxWidth: "300px" }}
         >
           <Icon name="schedule" isHover={hovered === "schedule"} />
           <div>Click here to see available appointments by day</div>
-        </div>
+        </button>
       </div>
     </div>
   );
@@ -705,16 +767,18 @@ function SplashPage({ navigate, isSmall }) {
 
 function SchedulePage({ goBack }) {
   const currentYear = 2026;
+  const today = new Date();
+  const firstVisibleMonth = today.getFullYear() === currentYear ? today.getMonth() : 0;
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const [currentMonth, setCurrentMonth] = useState(0);
+  const [currentMonth, setCurrentMonth] = useState(firstVisibleMonth);
 
   const changeMonth = (offset) => {
-    setCurrentMonth((prev) => Math.min(11, Math.max(0, prev + offset)));
+    setCurrentMonth((prev) => Math.min(11, Math.max(firstVisibleMonth, prev + offset)));
   };
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -747,6 +811,12 @@ Thanks!`
 
   return (
     <div style={{ color: "white", textAlign: "center" }}>
+      <SEO
+        title="Schedule an Appointment | 3D Print & Burn"
+        description="Check available appointment days and email 3D Print & Burn about your custom fabrication project."
+        url={pageRoutes.schedule}
+      />
+
       <h2>{monthNames[currentMonth]} {currentYear}</h2>
 
       <p style={{ maxWidth: "600px", margin: "0 auto 1rem", color: "#9ca3af" }}>
@@ -758,7 +828,7 @@ Thanks!`
       </p>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "1rem" }}>
-        <button onClick={() => changeMonth(-1)} disabled={currentMonth === 0} style={buttonStyle}>⬅ Prev</button>
+        <button onClick={() => changeMonth(-1)} disabled={currentMonth === firstVisibleMonth} style={buttonStyle}>⬅ Prev</button>
         <button onClick={() => changeMonth(1)} disabled={currentMonth === 11} style={buttonStyle}>Next ➡</button>
       </div>
 
@@ -809,10 +879,12 @@ Thanks!`
 const cardStyle = {
   background: "#1f2937",
   color: "white",
+  border: "none",
   borderRadius: "0.75rem",
   padding: "1.5rem",
   boxShadow: "0 0 10px rgba(0,0,0,0.05)",
   cursor: "pointer",
+  font: "inherit",
   fontWeight: "500",
   display: "flex",
   flexDirection: "column",

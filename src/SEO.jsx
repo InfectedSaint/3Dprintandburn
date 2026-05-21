@@ -10,7 +10,7 @@ export default function SEO({ title, description, image, url }) {
   const seoTitle = title || defaultTitle;
   const seoDescription = description || defaultDescription;
   const seoImage = image ? `${siteUrl}${image}` : defaultImage; // ✅ always absolute
-  const seoUrl = url || siteUrl;
+  const seoUrl = url ? `${siteUrl}${url}` : siteUrl;
 
   return (
     <Helmet>

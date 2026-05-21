@@ -10,29 +10,29 @@
 
   <!-- Services -->
   <url>
-    <loc>https://3dprintandburn.com/#/3dprint</loc>
+    <loc>https://3dprintandburn.com/3d-print</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://3dprintandburn.com/#/3dscan</loc>
+    <loc>https://3dprintandburn.com/3d-scan</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://3dprintandburn.com/#/uvprint</loc>
+    <loc>https://3dprintandburn.com/uv-printing</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://3dprintandburn.com/#/laser</loc>
+    <loc>https://3dprintandburn.com/laser-engraving</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Schedule -->
   <url>
-    <loc>https://3dprintandburn.com/#/schedule</loc>
+    <loc>https://3dprintandburn.com/schedule</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
