@@ -287,10 +287,37 @@ export default function HomePage() {
       case "uvprint":
         return (
           <ServicePage
-            title="UV Color Printing (February 2026)"
-            desc="Vibrant full-color prints on cups, signs, and more using UV-cured ink. This service will be available starting February - March 2026."
+            title="UV Color Printing"
+            desc="We are very happy to announce that we have received our new UV printer and are now accepting UV printing orders while we continue learning the ins and outs of the machine. UV printing creates vibrant full-color designs on cups, signs, keepsakes, and more using UV-cured ink. Please check out our scheduling page and send us an email if there is anything we can help you make!"
             goBack={() => setPage("home")}
             imageSrc="/images/uvprinter.png"
+            galleryFolder="/gallery/uvprint_gallery/"
+            galleryImages={[
+              {
+                file: "grad_cup_sbob.webp",
+                description: "UV printing can add vibrant full-color graphics to curved drinkware and cups."
+              },
+              {
+                file: "grad_wood.webp",
+                description: "UV printing can place detailed color designs directly onto wood surfaces."
+              },
+              {
+                file: "Refrigerator_magnet.webp",
+                description: "UV printing is a great option for custom refrigerator magnets with crisp artwork and text."
+              },
+              {
+                file: "Thermos_lid.webp",
+                description: "UV printing can personalize smaller accessories such as lids, caps, and other keepsake parts."
+              },
+              {
+                file: "tile_Refrigerator_magnet.webp",
+                description: "UV printing can create tile-style magnets and small custom display pieces."
+              },
+              {
+                file: "3dtexture_u.v_print.mp4",
+                description: "This short clip shows a textured UV print process in progress."
+              }
+            ]}
           />
         );
       case "laser":
@@ -353,9 +380,25 @@ export default function HomePage() {
   );
 }
 
+const videoExtensions = [".mp4", ".webm", ".mov"];
+
+function isVideoGalleryItem(fileName) {
+  const lowerName = fileName.toLowerCase();
+  return videoExtensions.some((extension) => lowerName.endsWith(extension));
+}
+
+function normalizeGalleryItem(item) {
+  return typeof item === "string" ? { file: item } : item;
+}
+
 function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galleryFolder, galleryImages }) {
   const videoRef = useRef(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const normalizedGalleryItems = galleryImages?.map(normalizeGalleryItem);
+  const activeGalleryItem = normalizedGalleryItems?.[galleryIndex];
+  const activeGallerySrc = activeGalleryItem ? `${galleryFolder}${activeGalleryItem.file}` : "";
+  const activeGalleryIsVideo = activeGalleryItem ? isVideoGalleryItem(activeGalleryItem.file) : false;
+  const seoGalleryImage = normalizedGalleryItems?.find((item) => !isVideoGalleryItem(item.file))?.file;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -372,7 +415,7 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
       <SEO
         title={`${title} | 3D Print & Burn`}
         description={desc}
-        image={imageSrc || (galleryFolder && `${galleryFolder}${galleryImages?.[0]}`) || "/logo_print_burn_transparent.png"}
+        image={imageSrc || (galleryFolder && seoGalleryImage && `${galleryFolder}${seoGalleryImage}`) || "/logo_print_burn_transparent.png"}
       />
 
       <h2 style={{ fontSize: "2rem", fontWeight: "600" }}>{title}</h2>
@@ -396,11 +439,31 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
           <h3>Gallery</h3>
 
           <div style={{ position: "relative", padding: "1rem" }}>
-            <img
-              src={`${galleryFolder}${galleryImages[galleryIndex]}`}
-              alt="Gallery Image"
-              style={{ width: "100%", maxHeight: "300px", objectFit: "contain", borderRadius: "0.5rem" }}
-            />
+            {activeGalleryIsVideo ? (
+              <video
+                key={activeGallerySrc}
+                src={activeGallerySrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                style={{ width: "100%", maxHeight: "300px", objectFit: "contain", borderRadius: "0.5rem" }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img
+                src={activeGallerySrc}
+                alt="Gallery item"
+                style={{ width: "100%", maxHeight: "300px", objectFit: "contain", borderRadius: "0.5rem" }}
+              />
+            )}
+            {activeGalleryItem?.description && (
+              <p style={{ margin: "0.75rem auto 0", color: "#d1d5db", fontSize: "0.95rem", lineHeight: 1.45 }}>
+                {activeGalleryItem.description}
+              </p>
+            )}
             <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", gap: "1rem" }}>
               <button
                 style={buttonStyle}
@@ -430,13 +493,27 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
             }}
             aria-label="Thumbnail gallery"
           >
-            {galleryImages.map((img, i) => {
+            {normalizedGalleryItems.map((item, i) => {
+              const img = item.file;
               const isActive = i === galleryIndex;
+              const itemSrc = `${galleryFolder}${img}`;
+              const isVideo = isVideoGalleryItem(img);
+              const thumbnailStyle = {
+                width: 72,
+                height: 72,
+                objectFit: "cover",
+                borderRadius: "0.4rem",
+                border: isActive ? "2px solid #60a5fa" : "2px solid transparent",
+                boxShadow: isActive ? "0 0 0 2px rgba(96,165,250,0.3)" : "none",
+                opacity: isActive ? 1 : 0.85,
+                display: "block"
+              };
+
               return (
                 <button
                   key={img + i}
                   onClick={() => setGalleryIndex(i)}
-                  aria-label={`Show image ${i + 1}`}
+                  aria-label={`Show ${isVideo ? "video" : "image"} ${i + 1}`}
                   style={{
                     display: "inline-block",
                     border: "none",
@@ -444,25 +521,46 @@ function ServicePage({ title, desc, extraDesc, goBack, videoSrc, imageSrc, galle
                     padding: 0,
                     marginRight: "0.5rem",
                     cursor: "pointer",
-                    outline: "none"
+                    outline: "none",
+                    position: "relative",
+                    verticalAlign: "top"
                   }}
                 >
-                  <img
-                    src={`${galleryFolder}${img}`}
-                    alt={`Thumbnail ${i + 1}`}
-                    loading="lazy"
-                    style={{
-                      width: 72,
-                      height: 72,
-                      objectFit: "cover",
-                      borderRadius: "0.4rem",
-                      border: isActive ? "2px solid #60a5fa" : "2px solid transparent",
-                      boxShadow: isActive ? "0 0 0 2px rgba(96,165,250,0.3)" : "none",
-                      opacity: isActive ? 1 : 0.85
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseOut={(e) => (e.currentTarget.style.opacity = isActive ? "1" : "0.85")}
-                  />
+                  {isVideo ? (
+                    <>
+                      <video
+                        src={itemSrc}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        style={thumbnailStyle}
+                      />
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "grid",
+                          placeItems: "center",
+                          color: "white",
+                          fontSize: "1.4rem",
+                          textShadow: "0 1px 4px black",
+                          pointerEvents: "none"
+                        }}
+                      >
+                        ▶
+                      </span>
+                    </>
+                  ) : (
+                    <img
+                      src={itemSrc}
+                      alt={`Thumbnail ${i + 1}`}
+                      loading="lazy"
+                      style={thumbnailStyle}
+                      onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
+                      onMouseOut={(e) => (e.currentTarget.style.opacity = isActive ? "1" : "0.85")}
+                    />
+                  )}
                 </button>
               );
             })}
